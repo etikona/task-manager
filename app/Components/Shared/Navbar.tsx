@@ -9,15 +9,12 @@ import {
   FolderKanban,
   ListTodo,
   X,
-  Sun,
-  Moon,
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/public/logo.png";
-export default function Navbar() {
+const Navbar = () => {
   const [pathname, setPathname] = useState("/dashboard");
   const [open, setOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
 
   const navItems = [
     {
@@ -129,4 +126,6 @@ export default function Navbar() {
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
