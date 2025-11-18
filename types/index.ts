@@ -50,3 +50,12 @@ export interface User {
   name: string;
   email: string;
 }
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  capacity: number;
+  teamId: number;
+  currentTasks: number; // Add this field
+}

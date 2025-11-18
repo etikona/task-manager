@@ -7,18 +7,47 @@ interface AuthState {
   isAuthenticated: boolean;
   users: User[];
   loading: boolean;
+  initialized: boolean;
 }
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  users: [{ id: 1, name: "Demo User", email: "demo@example.com" }],
-  loading: false,
+// Check if we're in browser environment and get initial state from localStorage
+const getInitialState = (): AuthState => {
+  if (typeof window === "undefined") {
+    return {
+      user: null,
+      isAuthenticated: false,
+      users: [{ id: 1, name: "Demo User", email: "demo@example.com" }],
+      loading: false,
+      initialized: false,
+    };
+  }
+
+  try {
+    const savedState = localStorage.getItem("smart-task-manager-state");
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      return {
+        ...parsedState.auth,
+        loading: false,
+        initialized: true,
+      };
+    }
+  } catch (error) {
+    console.error("Error loading auth state from localStorage:", error);
+  }
+
+  return {
+    user: null,
+    isAuthenticated: false,
+    users: [{ id: 1, name: "Demo User", email: "demo@example.com" }],
+    loading: false,
+    initialized: false,
+  };
 };
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     loginStart: (state) => {
       state.loading = true;
@@ -27,9 +56,11 @@ const authSlice = createSlice({
       state.loading = false;
       state.user = action.payload;
       state.isAuthenticated = true;
+      state.initialized = true;
     },
     loginFailure: (state) => {
       state.loading = false;
+      state.initialized = true;
     },
     registerStart: (state) => {
       state.loading = true;
@@ -38,18 +69,20 @@ const authSlice = createSlice({
       state.loading = false;
       state.user = action.payload;
       state.isAuthenticated = true;
+      state.initialized = true;
     },
     registerFailure: (state) => {
       state.loading = false;
+      state.initialized = true;
     },
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.loading = false;
+      state.initialized = true;
     },
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
+    setInitialized: (state) => {
+      state.initialized = true;
     },
   },
 });
@@ -62,6 +95,6 @@ export const {
   registerSuccess,
   registerFailure,
   logout,
-  setUser,
+  setInitialized,
 } = authSlice.actions;
 export default authSlice.reducer;

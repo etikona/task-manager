@@ -1,7 +1,6 @@
 // app/dashboard/page.tsx
 "use client";
 
-// import ProtectedRoute from '@/components/ProtectedRoute'
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { logout } from "@/store/slices/authSlice";
 import Link from "next/link";
@@ -18,7 +17,6 @@ export default function DashboardPage() {
   };
 
   return (
-    // <ProtectedRoute>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
@@ -112,26 +110,6 @@ export default function DashboardPage() {
               >
                 Manage Tasks
               </Link>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
-              Getting Started
-            </h2>
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                Welcome to your Smart Task Manager! Here's how to get started:
-              </p>
-              <ol className="list-decimal list-inside space-y-2 text-gray-600">
-                <li>Create a team and add team members</li>
-                <li>Create projects and assign them to teams</li>
-                <li>Add tasks to projects and assign them to team members</li>
-                <li>
-                  Use the reassign feature to balance workloads automatically
-                </li>
-              </ol>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
@@ -12,6 +12,9 @@ import {
 import { Mail, Lock, Eye, EyeOff, UserPlus, User } from "lucide-react";
 
 const RegisterPage = () => {
+  const { isAuthenticated, initialized, loading } = useAppSelector(
+    (state) => state.auth
+  );
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,8 +27,31 @@ const RegisterPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.auth);
   const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (initialized && isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, initialized, router]);
+
+  // Show loading while checking auth state
+  if (!initialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if authenticated (will redirect)
+  if (isAuthenticated) {
+    return null;
+  }
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -74,31 +100,48 @@ const RegisterPage = () => {
 
     // Mock registration
     setTimeout(() => {
-      const existingState = JSON.parse(
-        localStorage.getItem("smart-task-manager-state") || "{}"
-      );
-      const existingUsers = existingState?.auth?.users || [];
+      try {
+        const savedState = localStorage.getItem("smart-task-manager-state");
+        const existingState = savedState ? JSON.parse(savedState) : {};
+        const existingUsers = existingState?.auth?.users || [];
 
-      // Check if user already exists
-      if (existingUsers.find((u: any) => u.email === formData.email)) {
+        // Check if user already exists
+        if (existingUsers.find((u: any) => u.email === formData.email)) {
+          dispatch(registerFailure());
+          setErrors({ email: "User with this email already exists" });
+          return;
+        }
+
+        const newUser = {
+          id: Date.now(),
+          name: formData.name,
+          email: formData.email,
+        };
+
+        // Update localStorage with new user
+        const updatedState = {
+          ...existingState,
+          auth: {
+            ...existingState.auth,
+            users: [...existingUsers, newUser],
+          },
+        };
+        localStorage.setItem(
+          "smart-task-manager-state",
+          JSON.stringify(updatedState)
+        );
+
+        dispatch(registerSuccess(newUser));
+        router.push("/dashboard");
+      } catch (error) {
         dispatch(registerFailure());
-        setErrors({ email: "User with this email already exists" });
-        return;
+        setErrors({ email: "An error occurred. Please try again." });
       }
-
-      const newUser = {
-        id: Date.now(),
-        name: formData.name,
-        email: formData.email,
-      };
-
-      dispatch(registerSuccess(newUser));
-      router.push("/dashboard");
     }, 1000);
   };
 
   return (
-    <div className="min-h-screen mt-10 flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-10">

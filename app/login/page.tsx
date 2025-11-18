@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
@@ -12,6 +12,9 @@ import {
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 
 const LoginPage = () => {
+  const { isAuthenticated, initialized, loading } = useAppSelector(
+    (state) => state.auth
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,8 +24,31 @@ const LoginPage = () => {
   );
 
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.auth);
   const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (initialized && isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, initialized, router]);
+
+  // Show loading while checking auth state
+  if (!initialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if authenticated (will redirect)
+  if (isAuthenticated) {
+    return null;
+  }
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -50,37 +76,72 @@ const LoginPage = () => {
 
     dispatch(loginStart());
 
-    // Mock authentication - in real app, this would be an API call
+    // Mock authentication - check against stored users
     setTimeout(() => {
-      const users =
-        JSON.parse(localStorage.getItem("smart-task-manager-state") || "{}")
-          ?.auth?.users || [];
-      const user = users.find((u: any) => u.email === email);
+      try {
+        const savedState = localStorage.getItem("smart-task-manager-state");
+        const existingState = savedState ? JSON.parse(savedState) : {};
+        const existingUsers = existingState?.auth?.users || [];
 
-      if (user) {
-        // For demo, we're not checking password. In real app, you'd verify hashed password
-        dispatch(loginSuccess(user));
-        router.push("/dashboard");
-      } else {
+        // Find user by email (in real app, you'd verify password)
+        const user = existingUsers.find((u: any) => u.email === email);
+
+        if (user) {
+          dispatch(loginSuccess(user));
+          router.push("/dashboard");
+        } else {
+          dispatch(loginFailure());
+          setErrors({ email: "Invalid email or password" });
+        }
+      } catch (error) {
         dispatch(loginFailure());
-        setErrors({ email: "Invalid credentials" });
+        setErrors({ email: "An error occurred. Please try again." });
       }
     }, 1000);
   };
 
   const handleDemoLogin = () => {
     setEmail("demo@example.com");
-    setPassword("demo");
+    setPassword("demo123");
+
+    dispatch(loginStart());
 
     setTimeout(() => {
-      const users =
-        JSON.parse(localStorage.getItem("smart-task-manager-state") || "{}")
-          ?.auth?.users || [];
-      const demoUser = users.find((u: any) => u.email === "demo@example.com");
+      try {
+        const savedState = localStorage.getItem("smart-task-manager-state");
+        const existingState = savedState ? JSON.parse(savedState) : {};
+        const existingUsers = existingState?.auth?.users || [];
 
-      if (demoUser) {
+        let demoUser = existingUsers.find(
+          (u: any) => u.email === "demo@example.com"
+        );
+
+        // Create demo user if it doesn't exist
+        if (!demoUser) {
+          demoUser = {
+            id: Date.now(),
+            name: "Demo User",
+            email: "demo@example.com",
+          };
+          // Update localStorage with demo user
+          const updatedState = {
+            ...existingState,
+            auth: {
+              ...existingState.auth,
+              users: [...existingUsers, demoUser],
+            },
+          };
+          localStorage.setItem(
+            "smart-task-manager-state",
+            JSON.stringify(updatedState)
+          );
+        }
+
         dispatch(loginSuccess(demoUser));
         router.push("/dashboard");
+      } catch (error) {
+        dispatch(loginFailure());
+        setErrors({ email: "Failed to login with demo account" });
       }
     }, 500);
   };

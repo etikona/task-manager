@@ -1,9 +1,11 @@
+// store/slices/teamsSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Team, TeamMember } from "@/types/index";
+import { Team, TeamMember } from "@/types";
 
 interface TeamsState {
   teams: Team[];
   members: TeamMember[];
+  loading: boolean;
 }
 
 const initialState: TeamsState = {
@@ -23,6 +25,7 @@ const initialState: TeamsState = {
       role: "Frontend Developer",
       capacity: 5,
       teamId: 1,
+      currentTasks: 3,
     },
     {
       id: 2,
@@ -30,6 +33,7 @@ const initialState: TeamsState = {
       role: "Backend Developer",
       capacity: 4,
       teamId: 1,
+      currentTasks: 2,
     },
     {
       id: 3,
@@ -37,14 +41,17 @@ const initialState: TeamsState = {
       role: "UI/UX Designer",
       capacity: 3,
       teamId: 1,
+      currentTasks: 4,
     },
   ],
+  loading: false,
 };
 
 const teamsSlice = createSlice({
   name: "teams",
   initialState,
   reducers: {
+    // Team actions
     createTeam: (
       state,
       action: PayloadAction<{
@@ -62,6 +69,28 @@ const teamsSlice = createSlice({
       };
       state.teams.push(newTeam);
     },
+
+    updateTeam: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        name?: string;
+        description?: string;
+      }>
+    ) => {
+      const team = state.teams.find((t) => t.id === action.payload.id);
+      if (team) {
+        Object.assign(team, action.payload);
+      }
+    },
+
+    deleteTeam: (state, action: PayloadAction<number>) => {
+      state.teams = state.teams.filter((t) => t.id !== action.payload);
+      // Also remove members of the deleted team
+      state.members = state.members.filter((m) => m.teamId !== action.payload);
+    },
+
+    // Member actions
     addMember: (
       state,
       action: PayloadAction<{
@@ -77,9 +106,11 @@ const teamsSlice = createSlice({
         role: action.payload.role,
         capacity: action.payload.capacity,
         teamId: action.payload.teamId,
+        currentTasks: 0,
       };
       state.members.push(newMember);
     },
+
     updateMember: (
       state,
       action: PayloadAction<{
@@ -87,6 +118,7 @@ const teamsSlice = createSlice({
         name?: string;
         role?: string;
         capacity?: number;
+        currentTasks?: number;
       }>
     ) => {
       const member = state.members.find((m) => m.id === action.payload.id);
@@ -94,12 +126,35 @@ const teamsSlice = createSlice({
         Object.assign(member, action.payload);
       }
     },
+
     deleteMember: (state, action: PayloadAction<number>) => {
       state.members = state.members.filter((m) => m.id !== action.payload);
+    },
+
+    updateMemberTaskCount: (
+      state,
+      action: PayloadAction<{
+        memberId: number;
+        taskCount: number;
+      }>
+    ) => {
+      const member = state.members.find(
+        (m) => m.id === action.payload.memberId
+      );
+      if (member) {
+        member.currentTasks = action.payload.taskCount;
+      }
     },
   },
 });
 
-export const { createTeam, addMember, updateMember, deleteMember } =
-  teamsSlice.actions;
+export const {
+  createTeam,
+  updateTeam,
+  deleteTeam,
+  addMember,
+  updateMember,
+  deleteMember,
+  updateMemberTaskCount,
+} = teamsSlice.actions;
 export default teamsSlice.reducer;
