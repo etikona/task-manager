@@ -21,6 +21,7 @@ export interface Project {
   teamId: number;
   createdById: number;
   createdAt: number;
+  status?: "active" | "completed" | "on-hold" | "cancelled" | string;
 }
 
 export type TaskPriority = "low" | "medium" | "high";
