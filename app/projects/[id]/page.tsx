@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { deleteProject } from "@/store/slices/projectSlice";
+import { deleteProject, updateProject } from "@/store/slices/projectSlice";
 import {
   ArrowLeft,
   FolderKanban,
@@ -12,6 +13,8 @@ import {
   Trash2,
   Edit,
   AlertTriangle,
+  X,
+  Save,
 } from "lucide-react";
 
 export default function ProjectDetailPage() {
@@ -26,6 +29,15 @@ export default function ProjectDetailPage() {
   const project = projects.find((p) => p.id === projectId);
   const team = teams.find((t) => t.id === project?.teamId);
   const teamMembers = members.filter((m) => m.teamId === project?.teamId);
+
+  // Edit mode states
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedProject, setEditedProject] = useState({
+    name: project?.name || "",
+    description: project?.description || "",
+    status: project?.status || "active",
+    teamId: project?.teamId || 0,
+  });
 
   if (!project) {
     return (
@@ -61,6 +73,39 @@ export default function ProjectDetailPage() {
     }
   };
 
+  const handleEditToggle = () => {
+    if (isEditMode) {
+      // Cancel edit - reset to original values
+      setEditedProject({
+        name: project.name,
+        description: project.description || "",
+        status: project.status || "active",
+        teamId: project.teamId || 0,
+      });
+    }
+    setIsEditMode(!isEditMode);
+  };
+
+  const handleSaveProject = () => {
+    if (!editedProject.name.trim()) {
+      alert("Project name is required");
+      return;
+    }
+
+    dispatch(
+      updateProject({
+        id: projectId,
+        updates: {
+          name: editedProject.name,
+          description: editedProject.description,
+          status: editedProject.status,
+          teamId: editedProject.teamId,
+        },
+      })
+    );
+    setIsEditMode(false);
+  };
+
   const getStatusColor = (status: string) => {
     if (!status) return "bg-gray-100 text-gray-800";
 
@@ -80,7 +125,7 @@ export default function ProjectDetailPage() {
 
   const getStatusDisplay = (status: string) => {
     if (!status) return "Unknown";
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    return status.charAt(0).toUpperCase() + status.slice(1).replace("-", " ");
   };
 
   const getOverloadedMembers = () => {
@@ -94,48 +139,151 @@ export default function ProjectDetailPage() {
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="text-4xl text-white">Project Details Page</h3>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/projects"
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back to Projects
-            </Link>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {project.name}
-                </h1>
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                    projectStatus
-                  )}`}
-                >
-                  {getStatusDisplay(projectStatus)}
-                </span>
-              </div>
-              {project.description && (
-                <p className="text-gray-600 mt-2 max-w-2xl">
-                  {project.description}
-                </p>
+        <div className="mb-8">
+          {/* Back Button */}
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-6"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Projects
+          </Link>
+
+          {/* Title and Actions */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              {isEditMode ? (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={editedProject.name}
+                    onChange={(e) =>
+                      setEditedProject({
+                        ...editedProject,
+                        name: e.target.value,
+                      })
+                    }
+                    className="text-3xl font-bold text-gray-900 border-b-2 border-gray-300 focus:border-gray-900 outline-none bg-transparent w-full max-w-2xl"
+                    placeholder="Project name"
+                  />
+                  <textarea
+                    value={editedProject.description}
+                    onChange={(e) =>
+                      setEditedProject({
+                        ...editedProject,
+                        description: e.target.value,
+                      })
+                    }
+                    className="text-gray-600 border border-gray-300 rounded-lg p-3 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none w-full max-w-2xl resize-none"
+                    placeholder="Project description"
+                    rows={3}
+                  />
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Status
+                      </label>
+                      <select
+                        value={editedProject.status}
+                        onChange={(e) =>
+                          setEditedProject({
+                            ...editedProject,
+                            status: e.target.value,
+                          })
+                        }
+                        className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
+                      >
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="on-hold">On Hold</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Team
+                      </label>
+                      <select
+                        value={editedProject.teamId}
+                        onChange={(e) =>
+                          setEditedProject({
+                            ...editedProject,
+                            teamId: parseInt(e.target.value),
+                          })
+                        }
+                        className="border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
+                      >
+                        <option value={0}>No team</option>
+                        {teams.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {project.name}
+                    </h1>
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        projectStatus
+                      )}`}
+                    >
+                      {getStatusDisplay(projectStatus)}
+                    </span>
+                  </div>
+                  {project.description && (
+                    <p className="text-gray-600 mt-2 max-w-2xl">
+                      {project.description}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
-          </div>
-          <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-all duration-300">
-              <Edit className="w-5 h-5" />
-              Edit Project
-            </button>
-            <button
-              onClick={handleDeleteProject}
-              className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-all duration-300"
-            >
-              <Trash2 className="w-5 h-5" />
-              Delete Project
-            </button>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 ml-6">
+              {isEditMode ? (
+                <>
+                  <button
+                    onClick={handleSaveProject}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200"
+                  >
+                    <Save className="w-5 h-5" />
+                    Save
+                  </button>
+                  <button
+                    onClick={handleEditToggle}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                  >
+                    <X className="w-5 h-5" />
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleEditToggle}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                  >
+                    <Edit className="w-5 h-5" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDeleteProject}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all duration-200"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -207,7 +355,7 @@ export default function ProjectDetailPage() {
                     </div>
                     <Link
                       href={`/teams/${team.id}`}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-gray-900 hover:text-gray-700 font-medium"
                     >
                       View Team →
                     </Link>
@@ -323,14 +471,14 @@ export default function ProjectDetailPage() {
               <div className="space-y-3">
                 <Link
                   href={`/projects/${project.id}/tasks`}
-                  className="block w-full text-left px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                  className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
                 >
                   View Tasks
                 </Link>
-                <button className="block w-full text-left px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   Add New Task
                 </button>
-                <button className="block w-full text-left px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                <button className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                   Generate Report
                 </button>
               </div>
