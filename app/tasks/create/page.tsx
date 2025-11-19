@@ -13,8 +13,11 @@ import {
   FolderKanban,
   Flag,
   AlertTriangle,
+  Zap,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
+import { findBestMember, getAvailableMembers } from "@/utils/autoAssign";
 
 export default function CreateTaskPage() {
   const [formData, setFormData] = useState({
@@ -31,11 +34,13 @@ export default function CreateTaskPage() {
   const [selectedProjectMembers, setSelectedProjectMembers] = useState<any[]>(
     []
   );
+  const [availableMembers, setAvailableMembers] = useState<any[]>([]);
+  const [isAutoAssigning, setIsAutoAssigning] = useState(false);
 
   const dispatch = useAppDispatch();
   const { projects } = useAppSelector((state) => state.projects);
   const { teams, members } = useAppSelector((state) => state.teams);
-  const { loading } = useAppSelector((state) => state.tasks);
+  const { tasks, loading } = useAppSelector((state) => state.tasks);
   const router = useRouter();
 
   // Update available members when project changes
@@ -46,13 +51,17 @@ export default function CreateTaskPage() {
       );
       if (project) {
         const teamMembers = members.filter((m) => m.teamId === project.teamId);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedProjectMembers(teamMembers);
+
+        // Calculate available members with load info
+        const membersWithLoad = getAvailableMembers(teamMembers, tasks);
+        setAvailableMembers(membersWithLoad);
       }
     } else {
       setSelectedProjectMembers([]);
+      setAvailableMembers([]);
     }
-  }, [formData.projectId, projects, members]);
+  }, [formData.projectId, projects, members, tasks]);
 
   const validateForm = () => {
     const newErrors: { title?: string; projectId?: string } = {};
@@ -104,12 +113,52 @@ export default function CreateTaskPage() {
     }
   };
 
+  const handleAutoAssign = () => {
+    if (!formData.projectId) {
+      alert("Please select a project first");
+      return;
+    }
+
+    setIsAutoAssigning(true);
+
+    // Simulate a small delay for better UX
+    setTimeout(() => {
+      const project = projects.find(
+        (p) => p.id === parseInt(formData.projectId)
+      );
+      if (project) {
+        const teamMembers = members.filter((m) => m.teamId === project.teamId);
+        const bestMember = findBestMember(teamMembers, tasks);
+
+        if (bestMember) {
+          setFormData((prev) => ({
+            ...prev,
+            assignedMemberId: bestMember.id.toString(),
+          }));
+
+          // Show success feedback
+          const memberInfo = availableMembers.find(
+            (m) => m.member.id === bestMember.id
+          );
+          if (memberInfo) {
+            console.log(
+              `Auto-assigned to ${bestMember.name} (${memberInfo.currentTasks}/${bestMember.capacity} tasks)`
+            );
+          }
+        } else {
+          alert("No available team members found for auto-assignment");
+        }
+      }
+      setIsAutoAssigning(false);
+    }, 500);
+  };
+
   const getMemberCapacityInfo = (memberId: string) => {
     const member = members.find((m) => m.id === parseInt(memberId));
     if (!member) return null;
 
-    const memberTasks = selectedProjectMembers.filter(
-      (m) => m.id === parseInt(memberId)
+    const memberTasks = tasks.filter(
+      (t) => t.assignedMemberId === parseInt(memberId)
     ).length;
     const isOverloaded = memberTasks > member.capacity;
 
@@ -220,45 +269,144 @@ export default function CreateTaskPage() {
               )}
             </div>
 
-            {/* Assignee Selection */}
+            {/* Assignee Selection with Auto-Assign */}
             <div>
-              <label
-                htmlFor="assignedMemberId"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Assign To
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="w-5 h-5 text-gray-400" />
-                </div>
-                <select
-                  id="assignedMemberId"
-                  name="assignedMemberId"
-                  value={formData.assignedMemberId}
-                  onChange={handleChange}
-                  disabled={!formData.projectId}
-                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 appearance-none disabled:bg-gray-50 disabled:text-gray-500"
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="assignedMemberId"
+                  className="block text-sm font-medium text-gray-700"
                 >
-                  <option value="">Unassigned</option>
-                  {selectedProjectMembers.map((member) => {
-                    const capacityInfo = getMemberCapacityInfo(
-                      member.id.toString()
-                    );
-                    return (
-                      <option key={member.id} value={member.id}>
-                        {member.name} - {member.role}
-                        {capacityInfo &&
-                          ` (${capacityInfo.currentTasks}/${capacityInfo.capacity} tasks)`}
-                        {capacityInfo?.isOverloaded && " ⚠️"}
-                      </option>
-                    );
-                  })}
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <div className="w-2 h-2 border-r-2 border-b-2 border-gray-400 transform rotate-45"></div>
-                </div>
+                  Assign To
+                </label>
+
+                {/* Auto-Assign Button */}
+                <button
+                  type="button"
+                  onClick={handleAutoAssign}
+                  disabled={!formData.projectId || isAutoAssigning}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-green-100 text-green-700 hover:bg-green-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg transition-all duration-200 font-medium"
+                >
+                  {isAutoAssigning ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                      <span>Finding Best Member...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-3 h-3" />
+                      <span>Auto Assign</span>
+                    </>
+                  )}
+                </button>
               </div>
+
+              <div className="space-y-3">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <select
+                    id="assignedMemberId"
+                    name="assignedMemberId"
+                    value={formData.assignedMemberId}
+                    onChange={handleChange}
+                    disabled={!formData.projectId}
+                    className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 appearance-none disabled:bg-gray-50 disabled:text-gray-500"
+                  >
+                    <option value="">Unassigned</option>
+                    {selectedProjectMembers.map((member) => {
+                      const capacityInfo = getMemberCapacityInfo(
+                        member.id.toString()
+                      );
+                      const isSelected =
+                        formData.assignedMemberId === member.id.toString();
+
+                      return (
+                        <option
+                          key={member.id}
+                          value={member.id}
+                          className={
+                            capacityInfo?.isOverloaded
+                              ? "text-red-600 font-semibold"
+                              : isSelected
+                              ? "text-green-600 font-semibold"
+                              : ""
+                          }
+                        >
+                          {member.name} - {member.role}
+                          {capacityInfo &&
+                            ` (${capacityInfo.currentTasks}/${capacityInfo.capacity} tasks)`}
+                          {capacityInfo?.isOverloaded && " ⚠️ Overloaded"}
+                          {isSelected && " ✅"}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <div className="w-2 h-2 border-r-2 border-b-2 border-gray-400 transform rotate-45"></div>
+                  </div>
+                </div>
+
+                {/* Team Capacity Overview */}
+                {formData.projectId && availableMembers.length > 0 && (
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Users className="w-4 h-4 text-gray-600" />
+                      <h4 className="text-sm font-medium text-gray-700">
+                        Team Capacity Overview
+                      </h4>
+                    </div>
+
+                    <div className="space-y-2">
+                      {availableMembers.map(
+                        ({
+                          member,
+                          currentTasks,
+                          availableCapacity,
+                          loadPercentage,
+                        }) => (
+                          <div
+                            key={member.id}
+                            className={`flex items-center justify-between text-sm p-2 rounded ${
+                              formData.assignedMemberId === member.id.toString()
+                                ? "bg-green-50 border border-green-200"
+                                : "bg-white border border-gray-100"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{member.name}</span>
+                              <span className="text-gray-500 text-xs">
+                                ({member.role})
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  currentTasks > member.capacity
+                                    ? "bg-red-100 text-red-700"
+                                    : currentTasks === member.capacity
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-green-100 text-green-700"
+                                }`}
+                              >
+                                {currentTasks}/{member.capacity} tasks
+                              </span>
+
+                              {availableCapacity > 0 && (
+                                <span className="text-xs text-blue-600">
+                                  +{availableCapacity} available
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {!formData.projectId && (
                 <p className="mt-2 text-sm text-gray-500">
                   Select a project first to see available team members

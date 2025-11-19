@@ -15,18 +15,18 @@ import {
   CheckCircle2,
   AlertCircle,
   Flag,
-  MoreVertical,
   Edit,
   Trash2,
 } from "lucide-react";
 
 import { deleteTask } from "@/store/slices/taskSlice";
 import { useRouter } from "next/navigation";
+import MemberCapacityBadge from "../Components/MemberCapacityBadge";
 
 export default function TasksPage() {
   const { tasks } = useAppSelector((state) => state.tasks);
   const { projects } = useAppSelector((state) => state.projects);
-  const { teams, members } = useAppSelector((state) => state.teams);
+  const { members } = useAppSelector((state) => state.teams);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -136,6 +136,33 @@ export default function TasksPage() {
     }
   };
 
+  // Calculate capacity statistics
+  const getCapacityStats = () => {
+    const totalCapacity = members.reduce(
+      (sum, member) => sum + member.capacity,
+      0
+    );
+    const totalAssignedTasks = tasks.filter(
+      (task) => task.assignedMemberId !== null
+    ).length;
+    const overloadedMembers = members.filter((member) => {
+      const taskCount = tasks.filter(
+        (task) => task.assignedMemberId === member.id
+      ).length;
+      return taskCount > member.capacity;
+    });
+
+    return {
+      totalCapacity,
+      totalAssignedTasks,
+      overloadedMembers: overloadedMembers.length,
+      utilization:
+        totalCapacity > 0 ? (totalAssignedTasks / totalCapacity) * 100 : 0,
+    };
+  };
+
+  const capacityStats = getCapacityStats();
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -154,6 +181,46 @@ export default function TasksPage() {
             <Plus className="w-5 h-5" />
             Create Task
           </Link>
+        </div>
+
+        {/* Capacity Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-gray-900">
+              {tasks.length}
+            </div>
+            <div className="text-sm text-gray-600">Total Tasks</div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-blue-600">
+              {capacityStats.totalAssignedTasks}
+            </div>
+            <div className="text-sm text-gray-600">Assigned Tasks</div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-green-600">
+              {capacityStats.totalCapacity}
+            </div>
+            <div className="text-sm text-gray-600">Total Capacity</div>
+          </div>
+          <div
+            className={`rounded-2xl shadow-sm border p-4 ${
+              capacityStats.overloadedMembers > 0
+                ? "bg-red-50 border-red-200"
+                : "bg-white border-gray-200"
+            }`}
+          >
+            <div
+              className={`text-2xl font-bold ${
+                capacityStats.overloadedMembers > 0
+                  ? "text-red-600"
+                  : "text-gray-900"
+              }`}
+            >
+              {capacityStats.overloadedMembers}
+            </div>
+            <div className="text-sm text-gray-600">Overloaded Members</div>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -342,9 +409,16 @@ export default function TasksPage() {
                             <span>{getProjectName(task.projectId)}</span>
                           </div>
 
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
                             <span>{getMemberName(task.assignedMemberId)}</span>
+                            {task.assignedMemberId && (
+                              <MemberCapacityBadge
+                                memberId={task.assignedMemberId}
+                                showIcon={false}
+                                compact={true}
+                              />
+                            )}
                           </div>
 
                           <div className="flex items-center gap-1">
