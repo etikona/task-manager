@@ -30,7 +30,6 @@ export default function ProjectDetailPage() {
   const team = teams.find((t) => t.id === project?.teamId);
   const teamMembers = members.filter((m) => m.teamId === project?.teamId);
 
-  // Edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedProject, setEditedProject] = useState({
     name: project?.name || "",
@@ -75,7 +74,6 @@ export default function ProjectDetailPage() {
 
   const handleEditToggle = () => {
     if (isEditMode) {
-      // Cancel edit - reset to original values
       setEditedProject({
         name: project.name,
         description: project.description || "",
@@ -138,9 +136,7 @@ export default function ProjectDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
-          {/* Back Button */}
           <Link
             href="/projects"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-6"
@@ -149,7 +145,6 @@ export default function ProjectDetailPage() {
             Back to Projects
           </Link>
 
-          {/* Title and Actions */}
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {isEditMode ? (
@@ -246,7 +241,6 @@ export default function ProjectDetailPage() {
               )}
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 ml-6">
               {isEditMode ? (
                 <>
@@ -287,7 +281,6 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-3">
@@ -335,9 +328,7 @@ export default function ProjectDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Project Details */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Team Information */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Team Information
@@ -412,7 +403,6 @@ export default function ProjectDetailPage() {
               )}
             </div>
 
-            {/* Recent Activity - Placeholder for now */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Recent Activity
@@ -424,9 +414,7 @@ export default function ProjectDetailPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Project Info */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Project Details
@@ -463,7 +451,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Quick Actions

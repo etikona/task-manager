@@ -1,4 +1,3 @@
-// app/teams/create/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -63,7 +62,6 @@ export default function CreateTeamPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/teams"
@@ -74,7 +72,6 @@ export default function CreateTeamPage() {
           </Link>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-blue-100 rounded-xl">
@@ -91,7 +88,6 @@ export default function CreateTeamPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Team Name */}
             <div>
               <label
                 htmlFor="name"
@@ -117,7 +113,6 @@ export default function CreateTeamPage() {
               )}
             </div>
 
-            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -136,7 +131,6 @@ export default function CreateTeamPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <div className="flex gap-3 pt-4">
               <Link
                 href="/teams"

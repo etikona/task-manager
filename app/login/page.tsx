@@ -26,14 +26,12 @@ const LoginPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (initialized && isAuthenticated) {
       router.push("/dashboard");
     }
   }, [isAuthenticated, initialized, router]);
 
-  // Show loading while checking auth state
   if (!initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -45,7 +43,6 @@ const LoginPage = () => {
     );
   }
 
-  // Don't render if authenticated (will redirect)
   if (isAuthenticated) {
     return null;
   }
@@ -76,14 +73,12 @@ const LoginPage = () => {
 
     dispatch(loginStart());
 
-    // Mock authentication - check against stored users
     setTimeout(() => {
       try {
         const savedState = localStorage.getItem("smart-task-manager-state");
         const existingState = savedState ? JSON.parse(savedState) : {};
         const existingUsers = existingState?.auth?.users || [];
 
-        // Find user by email (in real app, you'd verify password)
         const user = existingUsers.find((u: any) => u.email === email);
 
         if (user) {
@@ -116,14 +111,13 @@ const LoginPage = () => {
           (u: any) => u.email === "demo@example.com"
         );
 
-        // Create demo user if it doesn't exist
         if (!demoUser) {
           demoUser = {
             id: Date.now(),
             name: "Demo User",
             email: "demo@example.com",
           };
-          // Update localStorage with demo user
+
           const updatedState = {
             ...existingState,
             auth: {
@@ -149,7 +143,6 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back
@@ -157,10 +150,8 @@ const LoginPage = () => {
           <p className="text-gray-600">Sign in to your account</p>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Email Input */}
             <div>
               <label
                 htmlFor="email"
@@ -203,7 +194,6 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Password Input */}
             <div>
               <label
                 htmlFor="password"
@@ -257,7 +247,6 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Sign In Button */}
             <button
               type="submit"
               disabled={loading}
@@ -276,7 +265,6 @@ const LoginPage = () => {
               )}
             </button>
 
-            {/* Demo Button */}
             <button
               type="button"
               onClick={handleDemoLogin}
@@ -287,7 +275,6 @@ const LoginPage = () => {
             </button>
           </form>
 
-          {/* Sign Up Link */}
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
@@ -301,7 +288,6 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <p className="mt-8 text-center text-xs text-gray-500">
           Protected by industry-standard encryption
         </p>

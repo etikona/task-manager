@@ -39,23 +39,14 @@ export interface Task {
   updatedAt: number;
 }
 
-// Updated Activity Log to match taskSlice implementation
 export interface ActivityLog {
-  id: string;
+  id: number;
+  action: string;
   timestamp: number;
-  action:
-    | "TASK_CREATED"
-    | "TASK_UPDATED"
-    | "TASK_DELETED"
-    | "TASK_REASSIGNED"
-    | "STATUS_CHANGED"
-    | "BULK_REASSIGNMENT"
-    | "PRIORITY_CHANGED";
-  taskId: number;
-  taskTitle: string;
-  fromMemberId?: number | null;
-  toMemberId?: number | null;
-  details: string;
+  teamId?: number;
+  projectId?: number;
+  taskId?: number;
+  details?: string;
 }
 
 export interface User {
@@ -70,7 +61,7 @@ export interface TeamMember {
   role: string;
   capacity: number;
   teamId: number;
-  currentTasks: number; // Add this field
+  currentTasks: number;
 }
 
 export interface MemberWithLoad {
@@ -78,4 +69,10 @@ export interface MemberWithLoad {
   currentTasks: number;
   availableCapacity: number;
   loadPercentage: number;
+}
+export interface Updates {
+  name: string;
+  description: string;
+  status: string;
+  teamId: number;
 }

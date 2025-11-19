@@ -1,4 +1,3 @@
-// app/projects/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -57,15 +56,13 @@ export default function ProjectsPage() {
   });
 
   const getTaskCount = (projectId: number) => {
-    // This will be connected to tasks later
     // eslint-disable-next-line react-hooks/purity
-    return Math.floor(Math.random() * 10); // Mock data for now
+    return Math.floor(Math.random() * 10);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
@@ -79,7 +76,7 @@ export default function ProjectsPage() {
             Create Project
           </Link>
         </div>
-        {/* Stats Summary */}
+
         <div className="my-12">
           {projects.length > 0 && (
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -114,10 +111,8 @@ export default function ProjectsPage() {
           )}
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
             <div className="flex-1">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -133,7 +128,6 @@ export default function ProjectsPage() {
               </div>
             </div>
 
-            {/* Status Filter */}
             <div className="w-full md:w-48">
               <select
                 value={statusFilter}
@@ -150,7 +144,6 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
           <div className="text-center py-12 ">
             <FolderKanban className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -212,7 +205,6 @@ export default function ProjectsPage() {
                     </p>
                   )}
 
-                  {/* Project Stats */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <Users className="w-4 h-4 text-gray-600 mx-auto mb-1" />
@@ -230,7 +222,6 @@ export default function ProjectsPage() {
                     </div>
                   </div>
 
-                  {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Calendar className="w-4 h-4" />

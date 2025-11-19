@@ -1,22 +1,9 @@
-// store/slices/taskSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Task, TaskPriority, TaskStatus } from "@/types";
+import { Task, TaskPriority, TaskStatus, TeamMember } from "@/types";
 
 interface TasksState {
   tasks: Task[];
   loading: boolean;
-  activityLog: ActivityLogEntry[];
-}
-
-interface ActivityLogEntry {
-  id: string;
-  timestamp: number;
-  action: string;
-  taskId: number;
-  taskTitle: string;
-  fromMemberId?: number | null;
-  toMemberId?: number | null;
-  details: string;
 }
 
 const initialState: TasksState = {
@@ -67,7 +54,6 @@ const initialState: TasksState = {
     },
   ],
   loading: false,
-  activityLog: [],
 };
 
 const tasksSlice = createSlice({
@@ -97,20 +83,6 @@ const tasksSlice = createSlice({
         updatedAt: Date.now(),
       };
       state.tasks.push(newTask);
-
-      // Add to activity log
-      state.activityLog.unshift({
-        id: `log-${Date.now()}`,
-        timestamp: Date.now(),
-        action: "TASK_CREATED",
-        taskId: newTask.id,
-        taskTitle: newTask.title,
-        details: `Task "${newTask.title}" created${
-          action.payload.assignedMemberId
-            ? ` and assigned to member ${action.payload.assignedMemberId}`
-            : ""
-        }`,
-      });
     },
 
     updateTask: (
@@ -127,58 +99,38 @@ const tasksSlice = createSlice({
       const task = state.tasks.find((t) => t.id === action.payload.id);
       if (task) {
         const oldAssignedMemberId = task.assignedMemberId;
+        const oldStatus = task.status;
+        const oldPriority = task.priority;
+        const oldTitle = task.title;
 
-        Object.assign(task, {
-          ...action.payload,
-          updatedAt: Date.now(),
+        console.log("Updating task:", {
+          taskId: task.id,
+          oldTitle,
+          newTitle: action.payload.title,
+          oldAssignedMemberId,
+          newAssignedMemberId: action.payload.assignedMemberId,
+          oldStatus,
+          newStatus: action.payload.status,
+          oldPriority,
+          newPriority: action.payload.priority,
         });
 
-        // Log assignment changes
-        if (
-          action.payload.assignedMemberId !== undefined &&
-          action.payload.assignedMemberId !== oldAssignedMemberId
-        ) {
-          state.activityLog.unshift({
-            id: `log-${Date.now()}`,
-            timestamp: Date.now(),
-            action: "TASK_REASSIGNED",
-            taskId: task.id,
-            taskTitle: task.title,
-            fromMemberId: oldAssignedMemberId,
-            toMemberId: action.payload.assignedMemberId,
-            details: `Task "${task.title}" reassigned from ${
-              oldAssignedMemberId || "unassigned"
-            } to ${action.payload.assignedMemberId || "unassigned"}`,
-          });
-        }
+        if (action.payload.title !== undefined)
+          task.title = action.payload.title;
+        if (action.payload.description !== undefined)
+          task.description = action.payload.description;
+        if (action.payload.assignedMemberId !== undefined)
+          task.assignedMemberId = action.payload.assignedMemberId;
+        if (action.payload.priority !== undefined)
+          task.priority = action.payload.priority;
+        if (action.payload.status !== undefined)
+          task.status = action.payload.status;
 
-        // Log status changes
-        if (action.payload.status && action.payload.status !== task.status) {
-          state.activityLog.unshift({
-            id: `log-${Date.now()}`,
-            timestamp: Date.now(),
-            action: "STATUS_CHANGED",
-            taskId: task.id,
-            taskTitle: task.title,
-            details: `Task "${task.title}" status changed to ${action.payload.status}`,
-          });
-        }
+        task.updatedAt = Date.now();
       }
     },
 
     deleteTask: (state, action: PayloadAction<number>) => {
-      const task = state.tasks.find((t) => t.id === action.payload);
-      if (task) {
-        // Add to activity log before deletion
-        state.activityLog.unshift({
-          id: `log-${Date.now()}`,
-          timestamp: Date.now(),
-          action: "TASK_DELETED",
-          taskId: task.id,
-          taskTitle: task.title,
-          details: `Task "${task.title}" was deleted`,
-        });
-      }
       state.tasks = state.tasks.filter((t) => t.id !== action.payload);
     },
 
@@ -194,96 +146,46 @@ const tasksSlice = createSlice({
         const oldMemberId = task.assignedMemberId;
         task.assignedMemberId = action.payload.newMemberId;
         task.updatedAt = Date.now();
-
-        // Log the reassignment
-        state.activityLog.unshift({
-          id: `log-${Date.now()}`,
-          timestamp: Date.now(),
-          action: "TASK_REASSIGNED",
-          taskId: task.id,
-          taskTitle: task.title,
-          fromMemberId: oldMemberId,
-          toMemberId: action.payload.newMemberId,
-          details: `Task "${task.title}" reassigned from ${
-            oldMemberId || "unassigned"
-          } to ${action.payload.newMemberId || "unassigned"}`,
-        });
       }
     },
 
-    // New action for bulk reassignment
-    reassignTasksAutomatically: (
+    reassignTasks: (
       state,
       action: PayloadAction<{
-        projectId?: number;
-        teamId?: number;
+        members: TeamMember[];
       }>
     ) => {
-      const { tasks, activityLog } = state;
-      const { members } = action.payload as any; // You'll need to access members from teams state
+      const { members } = action.payload;
 
-      // This is a simplified version - you'll want to implement the full algorithm
-      const reassignedTasks: Array<{
-        taskId: number;
-        fromMemberId: number | null;
-        toMemberId: number;
-      }> = [];
+      members.forEach((member) => {
+        const memberTasks = state.tasks.filter(
+          (task) => task.assignedMemberId === member.id
+        );
+        if (memberTasks.length > member.capacity) {
+          const tasksToReassign = memberTasks
+            .filter((task) => task.priority !== "high")
+            .slice(0, memberTasks.length - member.capacity);
 
-      // Basic implementation - move tasks from overloaded members to available ones
-      tasks.forEach((task) => {
-        if (task.assignedMemberId && task.priority !== "high") {
-          const currentMember = members.find(
-            (m: any) => m.id === task.assignedMemberId
-          );
-          if (currentMember) {
-            const memberTasks = tasks.filter(
-              (t) => t.assignedMemberId === currentMember.id
-            ).length;
-            if (memberTasks > currentMember.capacity) {
-              // Find a member with available capacity
-              const availableMember = members.find((m: any) => {
-                const mTasks = tasks.filter(
-                  (t) => t.assignedMemberId === m.id
-                ).length;
-                return mTasks < m.capacity;
-              });
+          tasksToReassign.forEach((task) => {
+            // Find available member
+            const availableMember = members.find((m) => {
+              const mTasks = state.tasks.filter(
+                (t) => t.assignedMemberId === m.id
+              ).length;
+              return mTasks < m.capacity && m.id !== member.id;
+            });
 
-              if (availableMember) {
-                const oldMemberId = task.assignedMemberId;
-                task.assignedMemberId = availableMember.id;
-                task.updatedAt = Date.now();
-
-                reassignedTasks.push({
-                  taskId: task.id,
-                  fromMemberId: oldMemberId,
-                  toMemberId: availableMember.id,
-                });
-              }
+            if (availableMember) {
+              task.assignedMemberId = availableMember.id;
+              task.updatedAt = Date.now();
             }
-          }
+          });
         }
       });
-
-      // Log bulk reassignment
-      if (reassignedTasks.length > 0) {
-        activityLog.unshift({
-          id: `log-${Date.now()}`,
-          timestamp: Date.now(),
-          action: "BULK_REASSIGNMENT",
-          taskId: 0,
-          taskTitle: "Multiple Tasks",
-          details: `${reassignedTasks.length} tasks were automatically reassigned for better load balancing`,
-        });
-      }
     },
 
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
-    },
-
-    // New action to clear activity log
-    clearActivityLog: (state) => {
-      state.activityLog = [];
     },
   },
 });
@@ -293,32 +195,35 @@ export const {
   updateTask,
   deleteTask,
   reassignTask,
-  reassignTasksAutomatically,
+  reassignTasks,
   setLoading,
-  clearActivityLog,
 } = tasksSlice.actions;
 
-// Selectors
-export const selectTasksByMember = (state: TasksState, memberId: number) => {
-  return state.tasks.filter((task) => task.assignedMemberId === memberId);
+export const selectTasksByMember = (
+  state: { tasks: TasksState },
+  memberId: number
+) => {
+  return state.tasks.tasks.filter((task) => task.assignedMemberId === memberId);
 };
 
-export const selectMemberTaskCount = (state: TasksState, memberId: number) => {
-  return state.tasks.filter((task) => task.assignedMemberId === memberId)
+export const selectMemberTaskCount = (
+  state: { tasks: TasksState },
+  memberId: number
+) => {
+  return state.tasks.tasks.filter((task) => task.assignedMemberId === memberId)
     .length;
 };
 
-export const selectOverloadedMembers = (state: TasksState, members: any[]) => {
+export const selectOverloadedMembers = (
+  state: { tasks: TasksState },
+  members: TeamMember[]
+) => {
   return members.filter((member) => {
-    const taskCount = state.tasks.filter(
+    const taskCount = state.tasks.tasks.filter(
       (task) => task.assignedMemberId === member.id
     ).length;
     return taskCount > member.capacity;
   });
-};
-
-export const selectRecentActivity = (state: TasksState, limit: number = 10) => {
-  return state.activityLog.slice(0, limit);
 };
 
 export default tasksSlice.reducer;

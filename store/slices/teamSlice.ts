@@ -1,4 +1,3 @@
-// store/slices/teamsSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Team, TeamMember } from "@/types";
 
@@ -51,7 +50,6 @@ const teamsSlice = createSlice({
   name: "teams",
   initialState,
   reducers: {
-    // Team actions
     createTeam: (
       state,
       action: PayloadAction<{
@@ -86,11 +84,10 @@ const teamsSlice = createSlice({
 
     deleteTeam: (state, action: PayloadAction<number>) => {
       state.teams = state.teams.filter((t) => t.id !== action.payload);
-      // Also remove members of the deleted team
+
       state.members = state.members.filter((m) => m.teamId !== action.payload);
     },
 
-    // Member actions
     addMember: (
       state,
       action: PayloadAction<{

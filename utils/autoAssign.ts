@@ -1,4 +1,3 @@
-// utils/autoAssign.ts
 import { TeamMember } from "@/types";
 import { Task } from "@/types";
 
@@ -42,20 +41,17 @@ export const findBestMember = (
 ): TeamMember | null => {
   const availableMembers = getAvailableMembers(members, tasks);
 
-  // Filter members who have available capacity
   const membersWithCapacity = availableMembers.filter(
     (m) => m.availableCapacity > 0
   );
 
   if (membersWithCapacity.length > 0) {
-    // Sort by current tasks (ascending) to find the least loaded member
     const sortedMembers = membersWithCapacity.sort(
       (a, b) => a.currentTasks - b.currentTasks
     );
     return sortedMembers[0].member;
   }
 
-  // If no one has capacity, find the member with the lowest load percentage
   const sortedByLoad = availableMembers.sort(
     (a, b) => a.loadPercentage - b.loadPercentage
   );

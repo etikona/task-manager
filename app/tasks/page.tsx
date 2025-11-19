@@ -1,4 +1,3 @@
-// app/tasks/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -46,7 +45,6 @@ export default function TasksPage() {
     }
   };
 
-  // Filter tasks based on all criteria
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,7 +70,6 @@ export default function TasksPage() {
     );
   });
 
-  // Helper functions
   const getProjectName = (projectId: number) => {
     const project = projects.find((p) => p.id === projectId);
     return project?.name || "Unknown Project";
@@ -136,7 +133,6 @@ export default function TasksPage() {
     }
   };
 
-  // Calculate capacity statistics
   const getCapacityStats = () => {
     const totalCapacity = members.reduce(
       (sum, member) => sum + member.capacity,
@@ -166,7 +162,6 @@ export default function TasksPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
@@ -183,7 +178,6 @@ export default function TasksPage() {
           </Link>
         </div>
 
-        {/* Capacity Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
             <div className="text-2xl font-bold text-gray-900">
@@ -205,7 +199,7 @@ export default function TasksPage() {
           </div>
           <div
             className={`rounded-2xl shadow-sm border p-4 ${
-              capacityStats.overloadedMembers > 0
+              capacityStats?.overloadedMembers > 2
                 ? "bg-red-50 border-red-200"
                 : "bg-white border-gray-200"
             }`}
@@ -222,11 +216,33 @@ export default function TasksPage() {
             <div className="text-sm text-gray-600">Overloaded Members</div>
           </div>
         </div>
+        <div>
+          {tasks.length > 0 && (
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {tasks.filter((t) => t.status === "pending").length}
+                </div>
+                <div className="text-sm text-gray-600">Pending</div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {tasks.filter((t) => t.status === "in-progress").length}
+                </div>
+                <div className="text-sm text-gray-600">In Progress</div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {tasks.filter((t) => t.status === "done").length}
+                </div>
+                <div className="text-sm text-gray-600">Completed</div>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Search and Filters */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-col gap-4">
-            {/* Search Bar */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
@@ -243,7 +259,6 @@ export default function TasksPage() {
                 </div>
               </div>
 
-              {/* Toggle Filters Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
@@ -261,10 +276,8 @@ export default function TasksPage() {
               </button>
             </div>
 
-            {/* Expandable Filters */}
             {showFilters && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-200">
-                {/* Project Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Project
@@ -283,7 +296,6 @@ export default function TasksPage() {
                   </select>
                 </div>
 
-                {/* Member Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Assignee
@@ -303,7 +315,6 @@ export default function TasksPage() {
                   </select>
                 </div>
 
-                {/* Status Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Status
@@ -320,7 +331,6 @@ export default function TasksPage() {
                   </select>
                 </div>
 
-                {/* Priority Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Priority
@@ -341,7 +351,6 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Tasks List */}
         {filteredTasks.length === 0 ? (
           <div className="text-center py-12">
             <ListTodo className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -373,13 +382,11 @@ export default function TasksPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-start gap-4">
-                      {/* Status Icon */}
                       <div className="flex-shrink-0 mt-1">
                         {getStatusIcon(task.status)}
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        {/* Task Title and Priority */}
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
                             {task.title}
@@ -395,14 +402,12 @@ export default function TasksPage() {
                           </span>
                         </div>
 
-                        {/* Description */}
                         {task.description && (
                           <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                             {task.description}
                           </p>
                         )}
 
-                        {/* Meta Information */}
                         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <FolderKanban className="w-4 h-4" />
@@ -443,7 +448,6 @@ export default function TasksPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
@@ -461,36 +465,6 @@ export default function TasksPage() {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Stats Summary */}
-        {tasks.length > 0 && (
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {tasks.length}
-              </div>
-              <div className="text-sm text-gray-600">Total Tasks</div>
-            </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-600">
-                {tasks.filter((t) => t.status === "pending").length}
-              </div>
-              <div className="text-sm text-gray-600">Pending</div>
-            </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {tasks.filter((t) => t.status === "in-progress").length}
-              </div>
-              <div className="text-sm text-gray-600">In Progress</div>
-            </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {tasks.filter((t) => t.status === "done").length}
-              </div>
-              <div className="text-sm text-gray-600">Completed</div>
-            </div>
           </div>
         )}
       </div>

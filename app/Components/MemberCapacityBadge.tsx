@@ -1,4 +1,3 @@
-// components/MemberCapacityBadge.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
@@ -29,7 +28,6 @@ export default function MemberCapacityBadge({
     );
   }
 
-  // Count tasks assigned to this member
   const memberTasksCount = tasks.filter(
     (task) => task.assignedMemberId === memberId
   ).length;
@@ -37,8 +35,6 @@ export default function MemberCapacityBadge({
   const isOverCapacity = memberTasksCount > member.capacity;
   const isNearCapacity = memberTasksCount === member.capacity;
   const hasCapacity = memberTasksCount < member.capacity;
-
-  // Determine styles based on capacity
   const getCapacityStyles = () => {
     if (isOverCapacity) {
       return "bg-red-100 text-red-800 border-red-300";

@@ -95,7 +95,6 @@ export default function TeamDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Link
@@ -130,7 +129,6 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="text-2xl font-bold text-gray-900">
@@ -167,7 +165,6 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        {/* Members Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -295,14 +292,12 @@ export default function TeamDetailPage() {
         </div>
       </div>
 
-      {/* Add Member Modal */}
       <AddMemberModal
         isOpen={showAddMemberModal}
         onClose={() => setShowAddMemberModal(false)}
         teamId={teamId}
       />
 
-      {/* Edit Member Modal */}
       <EditMemberModal
         isOpen={showEditMemberModal}
         onClose={() => {
@@ -313,7 +308,6 @@ export default function TeamDetailPage() {
         onSave={handleUpdateMember}
       />
 
-      {/* Delete Member Confirmation */}
       {memberToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">

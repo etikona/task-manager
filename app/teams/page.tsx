@@ -1,4 +1,3 @@
-// app/teams/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -23,7 +22,6 @@ export default function TeamsPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Teams</h1>
@@ -38,7 +36,6 @@ export default function TeamsPage() {
           </Link>
         </div>
 
-        {/* Teams Grid */}
         {teams.length === 0 ? (
           <div className="text-center py-12">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -83,7 +80,6 @@ export default function TeamsPage() {
                     </button>
                   </div>
 
-                  {/* Team Stats */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <Users className="w-6 h-6 text-gray-600 mx-auto mb-1" />
@@ -105,7 +101,6 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  {/* Members Preview */}
                   <div className="mb-4">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">
                       Members
@@ -138,7 +133,6 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  {/* View Team Button */}
                   <Link
                     href={`/teams/${team.id}`}
                     className="flex items-center justify-center gap-2 w-full py-2.5 px-4 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300"

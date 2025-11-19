@@ -1,4 +1,3 @@
-// store/slices/projectsSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Project } from "@/types";
 

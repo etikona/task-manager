@@ -1,4 +1,3 @@
-// app/teams/layout.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";

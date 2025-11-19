@@ -12,16 +12,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Sync authentication state with cookies for middleware
   useEffect(() => {
     if (isAuthenticated) {
-      document.cookie = "is-authenticated=true; path=/; max-age=86400"; // 24 hours
+      document.cookie = "is-authenticated=true; path=/; max-age=86400";
     } else {
       document.cookie = "is-authenticated=false; path=/; max-age=0";
     }
   }, [isAuthenticated]);
 
-  // Client-side route protection
   useEffect(() => {
     const protectedRoutes = ["/dashboard", "/teams", "/projects", "/tasks"];
     const authRoutes = ["/login", "/register"];

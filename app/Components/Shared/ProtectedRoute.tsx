@@ -13,13 +13,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is authenticated
     if (!isAuthenticated || !user) {
       router.push("/login");
     }
   }, [isAuthenticated, user, router]);
-
-  // Show loading state while checking authentication
   if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">

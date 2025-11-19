@@ -1,4 +1,3 @@
-// store/index.ts
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -7,8 +6,8 @@ import teamsSlice from "./slices/teamSlice";
 import projectsSlice from "./slices/projectSlice";
 import tasksSlice from "./slices/taskSlice";
 import activitySlice from "./slices/activitySlice";
+import { activityLogger } from "@/Middleware/activityLogger";
 
-// Combine all reducers
 const rootReducer = combineReducers({
   auth: authSlice,
   teams: teamsSlice,
@@ -33,7 +32,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }),
+    }).concat(activityLogger),
 });
 
 export const persistor = persistStore(store);

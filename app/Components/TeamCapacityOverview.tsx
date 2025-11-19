@@ -1,4 +1,3 @@
-// components/TeamCapacityOverview.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
@@ -28,7 +27,6 @@ export default function TeamCapacityOverview({
     );
   }
 
-  // Calculate team-wide stats
   const totalCapacity = teamMembers.reduce(
     (sum, member) => sum + member.capacity,
     0

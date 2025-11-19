@@ -29,14 +29,12 @@ const RegisterPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (initialized && isAuthenticated) {
       router.push("/dashboard");
     }
   }, [isAuthenticated, initialized, router]);
 
-  // Show loading while checking auth state
   if (!initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -48,7 +46,6 @@ const RegisterPage = () => {
     );
   }
 
-  // Don't render if authenticated (will redirect)
   if (isAuthenticated) {
     return null;
   }
@@ -85,7 +82,7 @@ const RegisterPage = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    // Clear error for the field being edited
+
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: "" });
     }
@@ -98,14 +95,12 @@ const RegisterPage = () => {
 
     dispatch(registerStart());
 
-    // Mock registration
     setTimeout(() => {
       try {
         const savedState = localStorage.getItem("smart-task-manager-state");
         const existingState = savedState ? JSON.parse(savedState) : {};
         const existingUsers = existingState?.auth?.users || [];
 
-        // Check if user already exists
         if (existingUsers.find((u: any) => u.email === formData.email)) {
           dispatch(registerFailure());
           setErrors({ email: "User with this email already exists" });
@@ -118,7 +113,6 @@ const RegisterPage = () => {
           email: formData.email,
         };
 
-        // Update localStorage with new user
         const updatedState = {
           ...existingState,
           auth: {
@@ -151,10 +145,8 @@ const RegisterPage = () => {
           <p className="text-gray-600">Get started with your free account</p>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Name Input */}
             <div>
               <label
                 htmlFor="name"
@@ -194,7 +186,6 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Email Input */}
             <div>
               <label
                 htmlFor="email"
@@ -234,7 +225,6 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Password Input */}
             <div>
               <label
                 htmlFor="password"
@@ -285,7 +275,6 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Confirm Password Input */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -338,7 +327,6 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {/* Create Account Button */}
             <button
               type="submit"
               disabled={loading}
@@ -358,7 +346,6 @@ const RegisterPage = () => {
             </button>
           </form>
 
-          {/* Sign In Link */}
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
@@ -372,7 +359,6 @@ const RegisterPage = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <p className="mt-8 text-center text-xs text-gray-500">
           By creating an account, you agree to our{" "}
           <a href="#" className="text-gray-700 hover:text-gray-900">

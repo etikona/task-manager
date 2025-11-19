@@ -1,4 +1,3 @@
-// app/dashboard/layout.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
@@ -21,7 +20,6 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, initialized, router]);
 
-  // Show loading while checking auth
   if (!initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -34,7 +32,7 @@ export default function DashboardLayout({
   }
 
   if (!isAuthenticated) {
-    return null; // Will redirect in useEffect
+    return null;
   }
 
   return <>{children}</>;

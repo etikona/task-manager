@@ -1,4 +1,3 @@
-// components/Shared/EditMemberModal.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -101,8 +100,6 @@ export default function EditMemberModal({
     setErrors({});
     onClose();
   };
-
-  // Close modal when clicking outside
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       handleClose();
@@ -119,7 +116,6 @@ export default function EditMemberModal({
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl w-full max-w-md mx-auto max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white/95 backdrop-blur-sm sticky top-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -141,11 +137,8 @@ export default function EditMemberModal({
             <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
           </button>
         </div>
-
-        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Name */}
             <div>
               <label
                 htmlFor="name"
@@ -178,8 +171,6 @@ export default function EditMemberModal({
                 </p>
               )}
             </div>
-
-            {/* Role */}
             <div>
               <label
                 htmlFor="role"
@@ -212,8 +203,6 @@ export default function EditMemberModal({
                 </p>
               )}
             </div>
-
-            {/* Capacity */}
             <div>
               <label
                 htmlFor="capacity"
@@ -246,8 +235,6 @@ export default function EditMemberModal({
                 Maximum number of tasks this member can handle comfortably
               </p>
             </div>
-
-            {/* Current Tasks */}
             <div>
               <label
                 htmlFor="currentTasks"
@@ -345,7 +332,6 @@ export default function EditMemberModal({
           </form>
         </div>
 
-        {/* Sticky Footer */}
         <div className="p-6 border-t border-gray-200 bg-white/95 backdrop-blur-sm sticky bottom-0">
           <div className="flex flex-col sm:flex-row gap-3">
             <button

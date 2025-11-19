@@ -1,4 +1,3 @@
-// app/tasks/edit/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -41,8 +40,6 @@ export default function EditTaskPage() {
   const router = useRouter();
 
   const task = tasks.find((t) => t.id === parseInt(id as string));
-
-  // Load task data and available members
   useEffect(() => {
     if (task) {
       setFormData({
@@ -54,7 +51,6 @@ export default function EditTaskPage() {
         status: task.status,
       });
 
-      // Load members for the task's project
       const project = projects.find((p) => p.id === task.projectId);
       if (project) {
         const teamMembers = members.filter((m) => m.teamId === project.teamId);
@@ -149,7 +145,6 @@ export default function EditTaskPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/tasks"
@@ -160,7 +155,6 @@ export default function EditTaskPage() {
           </Link>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-blue-100 rounded-xl">
@@ -173,7 +167,6 @@ export default function EditTaskPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Task Title */}
             <div>
               <label
                 htmlFor="title"
@@ -202,7 +195,6 @@ export default function EditTaskPage() {
               )}
             </div>
 
-            {/* Project Selection (Disabled for editing) */}
             <div>
               <label
                 htmlFor="projectId"
@@ -235,7 +227,6 @@ export default function EditTaskPage() {
               </p>
             </div>
 
-            {/* Assignee Selection */}
             <div>
               <label
                 htmlFor="assignedMemberId"
@@ -275,7 +266,6 @@ export default function EditTaskPage() {
               </div>
             </div>
 
-            {/* Priority */}
             <div>
               <label
                 htmlFor="priority"
@@ -304,7 +294,6 @@ export default function EditTaskPage() {
               </div>
             </div>
 
-            {/* Status */}
             <div>
               <label
                 htmlFor="status"
@@ -325,7 +314,6 @@ export default function EditTaskPage() {
               </select>
             </div>
 
-            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -344,7 +332,6 @@ export default function EditTaskPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <div className="flex gap-3 pt-4">
               <Link
                 href="/tasks"

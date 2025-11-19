@@ -1,4 +1,3 @@
-// components/Shared/AddMemberModal.tsx
 "use client";
 
 import { useState } from "react";
@@ -54,8 +53,6 @@ export default function AddMemberModal({
         teamId,
       })
     );
-
-    // Reset form and close modal
     setFormData({ name: "", role: "", capacity: 3 });
     setErrors({});
     onClose();
@@ -109,11 +106,8 @@ export default function AddMemberModal({
             <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
           </button>
         </div>
-
-        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Name */}
             <div>
               <label
                 htmlFor="name"
@@ -143,8 +137,6 @@ export default function AddMemberModal({
                 <p className="mt-2 text-sm text-red-600">{errors.name}</p>
               )}
             </div>
-
-            {/* Role */}
             <div>
               <label
                 htmlFor="role"
@@ -175,7 +167,6 @@ export default function AddMemberModal({
               )}
             </div>
 
-            {/* Capacity */}
             <div>
               <label
                 htmlFor="capacity"
@@ -211,7 +202,6 @@ export default function AddMemberModal({
           </form>
         </div>
 
-        {/* Sticky Footer */}
         <div className="p-6 border-t border-gray-200 bg-white/95 backdrop-blur-sm sticky bottom-0">
           <div className="flex flex-col sm:flex-row gap-3">
             <button

@@ -1,4 +1,3 @@
-// app/tasks/create/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -43,7 +42,6 @@ export default function CreateTaskPage() {
   const { tasks, loading } = useAppSelector((state) => state.tasks);
   const router = useRouter();
 
-  // Update available members when project changes
   useEffect(() => {
     if (formData.projectId) {
       const project = projects.find(
@@ -53,7 +51,6 @@ export default function CreateTaskPage() {
         const teamMembers = members.filter((m) => m.teamId === project.teamId);
         setSelectedProjectMembers(teamMembers);
 
-        // Calculate available members with load info
         const membersWithLoad = getAvailableMembers(teamMembers, tasks);
         setAvailableMembers(membersWithLoad);
       }
@@ -121,7 +118,6 @@ export default function CreateTaskPage() {
 
     setIsAutoAssigning(true);
 
-    // Simulate a small delay for better UX
     setTimeout(() => {
       const project = projects.find(
         (p) => p.id === parseInt(formData.projectId)
@@ -136,7 +132,6 @@ export default function CreateTaskPage() {
             assignedMemberId: bestMember.id.toString(),
           }));
 
-          // Show success feedback
           const memberInfo = availableMembers.find(
             (m) => m.member.id === bestMember.id
           );
@@ -183,7 +178,6 @@ export default function CreateTaskPage() {
           </Link>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-blue-100 rounded-xl">
@@ -198,7 +192,6 @@ export default function CreateTaskPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Task Title */}
             <div>
               <label
                 htmlFor="title"
@@ -227,7 +220,6 @@ export default function CreateTaskPage() {
               )}
             </div>
 
-            {/* Project Selection */}
             <div>
               <label
                 htmlFor="projectId"
@@ -269,7 +261,6 @@ export default function CreateTaskPage() {
               )}
             </div>
 
-            {/* Assignee Selection with Auto-Assign */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label
@@ -279,7 +270,6 @@ export default function CreateTaskPage() {
                   Assign To
                 </label>
 
-                {/* Auto-Assign Button */}
                 <button
                   type="button"
                   onClick={handleAutoAssign}
@@ -347,7 +337,6 @@ export default function CreateTaskPage() {
                   </div>
                 </div>
 
-                {/* Team Capacity Overview */}
                 {formData.projectId && availableMembers.length > 0 && (
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="flex items-center gap-2 mb-3">
@@ -414,7 +403,6 @@ export default function CreateTaskPage() {
               )}
             </div>
 
-            {/* Priority */}
             <div>
               <label
                 htmlFor="priority"
@@ -443,7 +431,6 @@ export default function CreateTaskPage() {
               </div>
             </div>
 
-            {/* Status */}
             <div>
               <label
                 htmlFor="status"
@@ -464,7 +451,6 @@ export default function CreateTaskPage() {
               </select>
             </div>
 
-            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -483,7 +469,6 @@ export default function CreateTaskPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <div className="flex gap-3 pt-4">
               <Link
                 href="/tasks"

@@ -1,4 +1,3 @@
-// components/CapacityIndicator.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
