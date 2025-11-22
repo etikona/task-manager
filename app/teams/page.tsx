@@ -7,16 +7,24 @@ import { Plus, Users, Calendar, ArrowRight, MoreVertical } from "lucide-react";
 
 export default function TeamsPage() {
   const { teams, members } = useAppSelector((state) => state.teams);
+  const { tasks } = useAppSelector((state) => state.tasks);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
 
   const getTeamMembers = (teamId: number) => {
     return members.filter((member) => member.teamId === teamId);
   };
 
+  // Calculate member's current task count dynamically
+  const getMemberTaskCount = (memberId: number) => {
+    return tasks.filter((task) => task.assignedMemberId === memberId).length;
+  };
+
   const getOverloadedMembers = (teamId: number) => {
     const teamMembers = getTeamMembers(teamId);
-    return teamMembers.filter((member) => member.currentTasks > member.capacity)
-      .length;
+    return teamMembers.filter((member) => {
+      const taskCount = getMemberTaskCount(member.id);
+      return taskCount > member.capacity;
+    }).length;
   };
 
   return (
@@ -106,25 +114,28 @@ export default function TeamsPage() {
                       Members
                     </h4>
                     <div className="space-y-2">
-                      {teamMembers.slice(0, 3).map((member) => (
-                        <div
-                          key={member.id}
-                          className="flex justify-between items-center text-sm"
-                        >
-                          <span className="text-gray-900">{member.name}</span>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              member.currentTasks > member.capacity
-                                ? "bg-red-100 text-red-800"
-                                : member.currentTasks === member.capacity
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
+                      {teamMembers.slice(0, 3).map((member) => {
+                        const currentTasks = getMemberTaskCount(member.id);
+                        return (
+                          <div
+                            key={member.id}
+                            className="flex justify-between items-center text-sm"
                           >
-                            {member.currentTasks}/{member.capacity}
-                          </span>
-                        </div>
-                      ))}
+                            <span className="text-gray-900">{member.name}</span>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                currentTasks > member.capacity
+                                  ? "bg-red-100 text-red-800"
+                                  : currentTasks === member.capacity
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-green-100 text-green-800"
+                              }`}
+                            >
+                              {currentTasks}/{member.capacity}
+                            </span>
+                          </div>
+                        );
+                      })}
                       {teamMembers.length > 3 && (
                         <div className="text-sm text-gray-500">
                           +{teamMembers.length - 3} more members

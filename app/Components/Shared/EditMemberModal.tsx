@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, User, Briefcase, Target, AlertTriangle } from "lucide-react";
+import { useAppSelector } from "@/hooks/redux";
 
 interface EditMemberModalProps {
   isOpen: boolean;
@@ -16,33 +17,35 @@ export default function EditMemberModal({
   member,
   onSave,
 }: EditMemberModalProps) {
+  const { tasks } = useAppSelector((state) => state.tasks);
+
   const [formData, setFormData] = useState({
     name: "",
     role: "",
     capacity: 3,
-    currentTasks: 0,
   });
   const [errors, setErrors] = useState<{
     name?: string;
     role?: string;
-    currentTasks?: string;
   }>({});
 
-  // Initialize form when member data changes
+  // Calculate current tasks dynamically
+  const currentTasks = member
+    ? tasks.filter((task) => task.assignedMemberId === member.id).length
+    : 0;
+
   useEffect(() => {
     if (member) {
       setFormData({
         name: member.name || "",
         role: member.role || "",
         capacity: member.capacity || 3,
-        currentTasks: member.currentTasks || 0,
       });
     }
   }, [member]);
 
   const validateForm = () => {
-    const newErrors: { name?: string; role?: string; currentTasks?: string } =
-      {};
+    const newErrors: { name?: string; role?: string } = {};
 
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
@@ -50,14 +53,6 @@ export default function EditMemberModal({
 
     if (!formData.role.trim()) {
       newErrors.role = "Role is required";
-    }
-
-    if (formData.currentTasks < 0) {
-      newErrors.currentTasks = "Current tasks cannot be negative";
-    }
-
-    if (formData.currentTasks > 20) {
-      newErrors.currentTasks = "Current tasks cannot exceed 20";
     }
 
     setErrors(newErrors);
@@ -75,7 +70,6 @@ export default function EditMemberModal({
       name: formData.name,
       role: formData.role,
       capacity: formData.capacity,
-      currentTasks: formData.currentTasks,
     });
   };
 
@@ -96,10 +90,11 @@ export default function EditMemberModal({
   };
 
   const handleClose = () => {
-    setFormData({ name: "", role: "", capacity: 3, currentTasks: 0 });
+    setFormData({ name: "", role: "", capacity: 3 });
     setErrors({});
     onClose();
   };
+
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       handleClose();
@@ -108,7 +103,7 @@ export default function EditMemberModal({
 
   if (!isOpen || !member) return null;
 
-  const isOverloaded = formData.currentTasks > formData.capacity;
+  const isOverloaded = currentTasks > formData.capacity;
 
   return (
     <div
@@ -137,6 +132,7 @@ export default function EditMemberModal({
             <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
           </button>
         </div>
+
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div>
@@ -171,6 +167,7 @@ export default function EditMemberModal({
                 </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="role"
@@ -203,6 +200,7 @@ export default function EditMemberModal({
                 </p>
               )}
             </div>
+
             <div>
               <label
                 htmlFor="capacity"
@@ -235,42 +233,13 @@ export default function EditMemberModal({
                 Maximum number of tasks this member can handle comfortably
               </p>
             </div>
-            <div>
-              <label
-                htmlFor="currentTasks"
-                className="block text-sm font-medium text-gray-700 mb-3"
-              >
-                Current Tasks
-              </label>
-              <input
-                id="currentTasks"
-                name="currentTasks"
-                type="number"
-                min="0"
-                max="20"
-                value={formData.currentTasks}
-                onChange={handleChange}
-                className={`block w-full px-4 py-3 border-2 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.currentTasks
-                    ? "border-red-300 focus:ring-red-500"
-                    : "border-gray-200 hover:border-gray-300 focus:border-transparent"
-                } ${isOverloaded ? "bg-red-50 border-red-200" : ""}`}
-                placeholder="0"
-              />
-              {errors.currentTasks && (
-                <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                  <AlertTriangle className="w-4 h-4" />
-                  {errors.currentTasks}
-                </p>
-              )}
-            </div>
 
             {/* Workload Summary */}
             <div
               className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                 isOverloaded
                   ? "bg-red-50 border-red-200"
-                  : formData.currentTasks === formData.capacity
+                  : currentTasks === formData.capacity
                   ? "bg-yellow-50 border-yellow-200"
                   : "bg-green-50 border-green-200"
               }`}
@@ -287,7 +256,7 @@ export default function EditMemberModal({
                       isOverloaded ? "text-red-700" : "text-gray-900"
                     }`}
                   >
-                    {formData.currentTasks}
+                    {currentTasks}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -304,14 +273,14 @@ export default function EditMemberModal({
                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                       isOverloaded
                         ? "bg-red-100 text-red-800"
-                        : formData.currentTasks === formData.capacity
+                        : currentTasks === formData.capacity
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-green-100 text-green-800"
                     }`}
                   >
                     {isOverloaded
                       ? "Overloaded"
-                      : formData.currentTasks === formData.capacity
+                      : currentTasks === formData.capacity
                       ? "At Capacity"
                       : "Available"}
                   </span>

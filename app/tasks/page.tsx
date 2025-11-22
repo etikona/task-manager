@@ -134,13 +134,16 @@ export default function TasksPage() {
   };
 
   const getCapacityStats = () => {
-    const totalCapacity = members.reduce(
-      (sum, member) => sum + member.capacity,
-      0
-    );
+    const totalCapacity = members.reduce((sum, member) => {
+      const capacity = Number(member.capacity) || 0;
+      return sum + capacity;
+    }, 0);
+    console.log(totalCapacity);
+
     const totalAssignedTasks = tasks.filter(
       (task) => task.assignedMemberId !== null
     ).length;
+
     const overloadedMembers = members.filter((member) => {
       const taskCount = tasks.filter(
         (task) => task.assignedMemberId === member.id
@@ -148,12 +151,16 @@ export default function TasksPage() {
       return taskCount > member.capacity;
     });
 
+    const utilization =
+      totalCapacity > 0
+        ? Math.round((totalAssignedTasks / totalCapacity) * 100)
+        : 0;
+
     return {
       totalCapacity,
       totalAssignedTasks,
       overloadedMembers: overloadedMembers.length,
-      utilization:
-        totalCapacity > 0 ? (totalAssignedTasks / totalCapacity) * 100 : 0,
+      utilization,
     };
   };
 

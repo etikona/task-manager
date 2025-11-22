@@ -31,6 +31,7 @@ export default function TeamCapacityOverview({
     (sum, member) => sum + member.capacity,
     0
   );
+  console.log(totalCapacity);
   const totalAssignedTasks = teamMembers.reduce((sum, member) => {
     return (
       sum + tasks.filter((task) => task.assignedMemberId === member.id).length

@@ -24,7 +24,6 @@ const initialState: TeamsState = {
       role: "Frontend Developer",
       capacity: 5,
       teamId: 1,
-      currentTasks: 3,
     },
     {
       id: 2,
@@ -32,7 +31,6 @@ const initialState: TeamsState = {
       role: "Backend Developer",
       capacity: 4,
       teamId: 1,
-      currentTasks: 2,
     },
     {
       id: 3,
@@ -40,7 +38,6 @@ const initialState: TeamsState = {
       role: "UI/UX Designer",
       capacity: 3,
       teamId: 1,
-      currentTasks: 4,
     },
   ],
   loading: false,
@@ -103,7 +100,6 @@ const teamsSlice = createSlice({
         role: action.payload.role,
         capacity: action.payload.capacity,
         teamId: action.payload.teamId,
-        currentTasks: 0,
       };
       state.members.push(newMember);
     },
@@ -115,7 +111,6 @@ const teamsSlice = createSlice({
         name?: string;
         role?: string;
         capacity?: number;
-        currentTasks?: number;
       }>
     ) => {
       const member = state.members.find((m) => m.id === action.payload.id);
@@ -127,21 +122,6 @@ const teamsSlice = createSlice({
     deleteMember: (state, action: PayloadAction<number>) => {
       state.members = state.members.filter((m) => m.id !== action.payload);
     },
-
-    updateMemberTaskCount: (
-      state,
-      action: PayloadAction<{
-        memberId: number;
-        taskCount: number;
-      }>
-    ) => {
-      const member = state.members.find(
-        (m) => m.id === action.payload.memberId
-      );
-      if (member) {
-        member.currentTasks = action.payload.taskCount;
-      }
-    },
   },
 });
 
@@ -152,6 +132,5 @@ export const {
   addMember,
   updateMember,
   deleteMember,
-  updateMemberTaskCount,
 } = teamsSlice.actions;
 export default teamsSlice.reducer;

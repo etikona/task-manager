@@ -24,6 +24,7 @@ export default function ProjectDetailPage() {
 
   const { projects } = useAppSelector((state) => state.projects);
   const { teams, members } = useAppSelector((state) => state.teams);
+  const { tasks } = useAppSelector((state) => state.tasks);
   const dispatch = useAppDispatch();
 
   const project = projects.find((p) => p.id === projectId);
@@ -37,6 +38,11 @@ export default function ProjectDetailPage() {
     status: project?.status || "active",
     teamId: project?.teamId || 0,
   });
+
+  // Helper to get member's current task count
+  const getMemberTaskCount = (memberId: number) => {
+    return tasks.filter((task) => task.assignedMemberId === memberId).length;
+  };
 
   if (!project) {
     return (
@@ -127,8 +133,10 @@ export default function ProjectDetailPage() {
   };
 
   const getOverloadedMembers = () => {
-    return teamMembers.filter((member) => member.currentTasks > member.capacity)
-      .length;
+    return teamMembers.filter((member) => {
+      const taskCount = getMemberTaskCount(member.id);
+      return taskCount > member.capacity;
+    }).length;
   };
 
   const projectStatus = project.status || "active";
@@ -286,7 +294,9 @@ export default function ProjectDetailPage() {
             <div className="flex items-center gap-3 mb-3">
               <FolderKanban className="w-6 h-6 text-gray-600" />
               <div>
-                <div className="text-2xl font-bold text-gray-900">12</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {tasks.filter((t) => t.projectId === projectId).length}
+                </div>
                 <div className="text-sm text-gray-600">Total Tasks</div>
               </div>
             </div>
@@ -308,7 +318,13 @@ export default function ProjectDetailPage() {
             <div className="flex items-center gap-3 mb-3">
               <Calendar className="w-6 h-6 text-gray-600" />
               <div>
-                <div className="text-2xl font-bold text-green-600">8</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {
+                    tasks.filter(
+                      (t) => t.projectId === projectId && t.status === "done"
+                    ).length
+                  }
+                </div>
                 <div className="text-sm text-gray-600">Completed Tasks</div>
               </div>
             </div>
@@ -357,37 +373,40 @@ export default function ProjectDetailPage() {
                       Team Members
                     </h4>
                     <div className="space-y-3">
-                      {teamMembers.slice(0, 5).map((member) => (
-                        <div
-                          key={member.id}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              <Users className="w-4 h-4 text-gray-600" />
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
-                                {member.name}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {member.role}
-                              </div>
-                            </div>
-                          </div>
+                      {teamMembers.slice(0, 5).map((member) => {
+                        const currentTasks = getMemberTaskCount(member.id);
+                        return (
                           <div
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              member.currentTasks > member.capacity
-                                ? "bg-red-100 text-red-800"
-                                : member.currentTasks === member.capacity
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
+                            key={member.id}
+                            className="flex items-center justify-between"
                           >
-                            {member.currentTasks}/{member.capacity}
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                <Users className="w-4 h-4 text-gray-600" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {member.name}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {member.role}
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                currentTasks > member.capacity
+                                  ? "bg-red-100 text-red-800"
+                                  : currentTasks === member.capacity
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-green-100 text-green-800"
+                              }`}
+                            >
+                              {currentTasks}/{member.capacity}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {teamMembers.length > 5 && (
                         <div className="text-sm text-gray-500 text-center">
                           +{teamMembers.length - 5} more members

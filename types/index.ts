@@ -61,7 +61,6 @@ export interface TeamMember {
   role: string;
   capacity: number;
   teamId: number;
-  currentTasks: number;
 }
 
 export interface MemberWithLoad {
