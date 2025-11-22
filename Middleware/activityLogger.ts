@@ -437,9 +437,9 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
           logMemberAdded({
             memberId: newMember.id,
             memberName: name,
-            role: role || "",
+            role: role || "Member",
             capacity: capacity || 0,
-            teamId: teamId ? parseInt(teamId, 10) : undefined,
+            teamId: teamId ? parseInt(teamId, 10) : 0,
           })
         );
         console.log("✅ Logged member addition");
