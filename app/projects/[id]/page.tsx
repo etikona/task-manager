@@ -98,12 +98,9 @@ const ProjectDetailPage = () => {
     dispatch(
       updateProject({
         id: projectId,
-        updates: {
-          name: editedProject.name,
-          description: editedProject.description,
-          status: editedProject.status,
-          teamId: editedProject.teamId,
-        },
+        name: editedProject.name,
+        description: editedProject.description,
+        status: editedProject.status,
       })
     );
     setIsEditMode(false);
