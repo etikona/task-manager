@@ -9,10 +9,14 @@ export const useTaskReassignment = () => {
   const { tasks } = useAppSelector((state) => state.tasks);
 
   const handleReassignTasks = () => {
+    let capturedReassignments: any[] = [];
+
     dispatch(
       reassignTasks({
         members,
         onReassignment: (reassignments) => {
+          capturedReassignments = reassignments;
+
           reassignments.forEach((reassignment) => {
             const task = tasks.find((t) => t.id === reassignment.taskId);
             const project = projects.find((p) => p.id === task?.projectId);
@@ -32,7 +36,7 @@ export const useTaskReassignment = () => {
       })
     );
 
-    return reassignments.length;
+    return capturedReassignments.length;
   };
 
   return { handleReassignTasks };
