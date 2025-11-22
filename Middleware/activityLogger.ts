@@ -342,7 +342,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
         if (changes.length > 0) {
           store.dispatch(
             logProjectUpdated({
-              projectId: action.payload.id,
+              projectId: parseInt(action.payload.id, 10),
               projectName: action.payload.name || project.name,
               changes,
               teamId: project.teamId,
@@ -356,7 +356,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
     if (isDeleteProjectAction(action)) {
       store.dispatch(
         logProjectDeleted({
-          projectId: action.payload,
+          projectId: parseInt(action.payload, 10),
           projectName: `Project ${action.payload}`,
         })
       );
@@ -405,7 +405,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
         if (changes.length > 0) {
           store.dispatch(
             logTeamUpdated({
-              teamId: action.payload.id,
+              teamId: parseInt(action.payload.id, 10),
               teamName: action.payload.name || team.name,
               changes,
             })
@@ -418,7 +418,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
     if (isDeleteTeamAction(action)) {
       store.dispatch(
         logTeamDeleted({
-          teamId: action.payload,
+          teamId: parseInt(action.payload, 10),
           teamName: `Team ${action.payload}`,
         })
       );
@@ -475,7 +475,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
         if (changes.length > 0) {
           store.dispatch(
             logMemberUpdated({
-              memberId: action.payload.id,
+              memberId: parseInt(action.payload.id, 10),
               memberName: action.payload.name || member.name,
               changes,
               teamId: member.teamId,
@@ -489,7 +489,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
     if (isDeleteMemberAction(action)) {
       store.dispatch(
         logMemberDeleted({
-          memberId: action.payload,
+          memberId: parseInt(action.payload, 10),
           memberName: `Member ${action.payload}`,
         })
       );
