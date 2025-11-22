@@ -1,4 +1,3 @@
-// teams/[id]/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -38,7 +37,6 @@ export default function TeamDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
-  // Helper to get member's current task count
   const getMemberTaskCount = (memberId: number) => {
     return tasks.filter((task) => task.assignedMemberId === memberId).length;
   };
@@ -161,7 +159,6 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        {/* Team Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3">
@@ -228,7 +225,6 @@ export default function TeamDetailPage() {
           </div>
         </div>
 
-        {/* Team Members */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
@@ -339,7 +335,6 @@ export default function TeamDetailPage() {
           )}
         </div>
 
-        {/* Capacity Warning */}
         {stats.overloadedMembers > 0 && (
           <div className="mt-6 bg-red-50 border-2 border-red-200 rounded-2xl p-6">
             <div className="flex items-start gap-4">

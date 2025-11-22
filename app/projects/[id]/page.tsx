@@ -39,7 +39,6 @@ export default function ProjectDetailPage() {
     teamId: project?.teamId || 0,
   });
 
-  // Helper to get member's current task count
   const getMemberTaskCount = (memberId: number) => {
     return tasks.filter((task) => task.assignedMemberId === memberId).length;
   };

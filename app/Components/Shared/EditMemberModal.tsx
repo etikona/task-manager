@@ -29,7 +29,6 @@ export default function EditMemberModal({
     role?: string;
   }>({});
 
-  // Calculate current tasks dynamically
   const currentTasks = member
     ? tasks.filter((task) => task.assignedMemberId === member.id).length
     : 0;

@@ -20,20 +20,6 @@ export default function Footer() {
 
   return (
     <footer className="relative mt-24 bg-gray-900 text-gray-300 py-14 px-6 md:px-16 overflow-hidden">
-      {/* Glow background */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
-        transition={{ duration: 1 }}
-        className="absolute top-0 left-0 w-72 h-72 bg-blue-500 blur-[140px] opacity-20 rounded-full"
-      />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
-        transition={{ duration: 1.2 }}
-        className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500 blur-[140px] opacity-20 rounded-full"
-      />
-
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
           <motion.h2
