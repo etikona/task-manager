@@ -228,7 +228,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
             assignedTo: assignedMemberId
               ? `Member ${assignedMemberId}`
               : undefined,
-            projectId,
+            projectId: parseInt(projectId, 10),
           })
         );
         console.log("✅ Logged task creation");
@@ -306,7 +306,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
             projectId: newProject.id,
             projectName: name,
             description,
-            teamId,
+            teamId: teamId ? parseInt(teamId, 10) : undefined,
           })
         );
         console.log("✅ Logged project creation");
@@ -439,7 +439,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
             memberName: name,
             role,
             capacity,
-            teamId,
+            teamId: teamId ? parseInt(teamId, 10) : undefined,
           })
         );
         console.log("✅ Logged member addition");
