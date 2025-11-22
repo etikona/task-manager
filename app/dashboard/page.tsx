@@ -1,4 +1,5 @@
 "use client";
+import { logTaskReassigned } from "@/store/slices/activitySlice";
 
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { reassignTasks } from "@/store/slices/taskSlice";
@@ -158,12 +159,75 @@ export default function DashboardPage() {
     setIsReassigning(true);
 
     try {
+      // Track reassignments for logging
+      const reassignmentsMade: Array<{
+        taskId: number;
+        taskTitle: string;
+        fromMemberName: string;
+        toMemberName: string;
+        projectId?: number;
+        projectName?: string;
+      }> = [];
+
+      // Process reassignments
+      members.forEach((member) => {
+        const memberTasks = tasks.filter(
+          (task) => task.assignedMemberId === member.id
+        );
+
+        if (memberTasks.length > member.capacity) {
+          const tasksToReassign = memberTasks
+            .filter((task) => task.priority !== "high")
+            .slice(0, memberTasks.length - member.capacity);
+
+          tasksToReassign.forEach((task) => {
+            const availableMember = members.find((m) => {
+              const mTasks = tasks.filter(
+                (t) => t.assignedMemberId === m.id
+              ).length;
+              return mTasks < m.capacity && m.id !== member.id;
+            });
+
+            if (availableMember) {
+              const project = projects.find((p) => p.id === task.projectId);
+
+              // Record the reassignment
+              reassignmentsMade.push({
+                taskId: task.id,
+                taskTitle: task.title,
+                fromMemberName: member.name,
+                toMemberName: availableMember.name,
+                projectId: project?.id,
+                projectName: project?.name,
+              });
+            }
+          });
+        }
+      });
+
+      // Dispatch the reassign action
       dispatch(reassignTasks({ members }));
+
+      // Log all reassignments to activity
+      reassignmentsMade.forEach((reassignment) => {
+        dispatch(
+          logTaskReassigned({
+            taskId: reassignment.taskId,
+            taskTitle: reassignment.taskTitle,
+            fromMember: reassignment.fromMemberName,
+            toMember: reassignment.toMemberName,
+            projectId: reassignment.projectId,
+            projectName: reassignment.projectName,
+          })
+        );
+      });
 
       setTimeout(() => {
         setIsReassigning(false);
         setToast({
-          message: `Successfully reassigned tasks! ${overloadedMembers.length} members balanced.`,
+          message: `Successfully reassigned ${reassignmentsMade.length} task${
+            reassignmentsMade.length !== 1 ? "s" : ""
+          }! Check the activity log for details.`,
           type: "success",
         });
       }, 1500);
@@ -230,7 +294,7 @@ export default function DashboardPage() {
             <button
               onClick={handleReassignTasks}
               disabled={isReassigning || overloadedMembers.length === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               {isReassigning ? (
                 <>

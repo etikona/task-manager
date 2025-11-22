@@ -153,15 +153,36 @@ const tasksSlice = createSlice({
       state,
       action: PayloadAction<{
         members: TeamMember[];
+        // Add these new fields to track reassignments
+        onReassignment?: (
+          reassignments: Array<{
+            taskId: number;
+            taskTitle: string;
+            fromMemberId: number | null;
+            toMemberId: number;
+            fromMemberName: string;
+            toMemberName: string;
+          }>
+        ) => void;
       }>
     ) => {
-      const { members } = action.payload;
+      const { members, onReassignment } = action.payload;
+      const reassignments: Array<{
+        taskId: number;
+        taskTitle: string;
+        fromMemberId: number | null;
+        toMemberId: number;
+        fromMemberName: string;
+        toMemberName: string;
+      }> = [];
 
       members.forEach((member) => {
         const memberTasks = state.tasks.filter(
           (task) => task.assignedMemberId === member.id
         );
+
         if (memberTasks.length > member.capacity) {
+          // Get tasks that can be reassigned (not high priority)
           const tasksToReassign = memberTasks
             .filter((task) => task.priority !== "high")
             .slice(0, memberTasks.length - member.capacity);
@@ -176,12 +197,28 @@ const tasksSlice = createSlice({
             });
 
             if (availableMember) {
+              // Record the reassignment BEFORE making the change
+              reassignments.push({
+                taskId: task.id,
+                taskTitle: task.title,
+                fromMemberId: task.assignedMemberId,
+                toMemberId: availableMember.id,
+                fromMemberName: member.name,
+                toMemberName: availableMember.name,
+              });
+
+              // Make the reassignment
               task.assignedMemberId = availableMember.id;
               task.updatedAt = Date.now();
             }
           });
         }
       });
+
+      // Call the callback with all reassignments
+      if (onReassignment && reassignments.length > 0) {
+        onReassignment(reassignments);
+      }
     },
 
     setLoading: (state, action: PayloadAction<boolean>) => {
