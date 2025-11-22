@@ -272,7 +272,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
         if (changes.length > 0) {
           store.dispatch(
             logTaskUpdated({
-              taskId: action.payload.id,
+              taskId: parseInt(action.payload.id, 10),
               taskTitle: action.payload.title || task.title,
               changes,
               projectId: task.projectId,
@@ -286,7 +286,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
     if (isDeleteTaskAction(action)) {
       store.dispatch(
         logTaskDeleted({
-          taskId: action.payload,
+          taskId: parseInt(action.payload, 10),
           taskTitle: `Task ${action.payload}`,
         })
       );
