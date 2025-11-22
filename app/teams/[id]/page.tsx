@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import {
   deleteTeam,
-  updateTeam,
   deleteMember,
   updateMember,
 } from "@/store/slices/teamSlice";
@@ -22,7 +21,7 @@ import {
 } from "lucide-react";
 import EditMemberModal from "../../Components/Shared/EditMemberModal";
 
-export default function TeamDetailPage() {
+const TeamDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const teamId = parseInt(params.id as string);
@@ -93,10 +92,10 @@ export default function TeamDetailPage() {
   };
 
   const getTeamStats = () => {
-    const totalCapacity = teamMembers.reduce(
-      (sum, member) => sum + member.capacity,
-      0
-    );
+    const totalCapacity = members.reduce((sum, member) => {
+      const capacity = Number(member.capacity) || 0;
+      return sum + capacity;
+    }, 0);
     const totalAssignedTasks = teamMembers.reduce((sum, member) => {
       return sum + getMemberTaskCount(member.id);
     }, 0);
@@ -338,7 +337,7 @@ export default function TeamDetailPage() {
         {stats.overloadedMembers > 0 && (
           <div className="mt-6 bg-red-50 border-2 border-red-200 rounded-2xl p-6">
             <div className="flex items-start gap-4">
-              <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+              <AlertTriangle className="w-6 h-6 text-red-600 shrink-0 mt-1" />
               <div>
                 <h3 className="text-lg font-semibold text-red-900 mb-2">
                   Capacity Warning
@@ -355,7 +354,6 @@ export default function TeamDetailPage() {
         )}
       </div>
 
-      {/* Edit Member Modal */}
       <EditMemberModal
         isOpen={isEditModalOpen}
         onClose={() => {
@@ -367,4 +365,6 @@ export default function TeamDetailPage() {
       />
     </div>
   );
-}
+};
+
+export default TeamDetailPage;

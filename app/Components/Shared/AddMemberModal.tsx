@@ -11,11 +11,7 @@ interface AddMemberModalProps {
   teamId: number;
 }
 
-export default function AddMemberModal({
-  isOpen,
-  onClose,
-  teamId,
-}: AddMemberModalProps) {
+const AddMemberModal = ({ isOpen, onClose, teamId }: AddMemberModalProps) => {
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -84,7 +80,6 @@ export default function AddMemberModal({
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl w-full max-w-md mx-auto max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white/95 backdrop-blur-sm sticky top-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
@@ -223,4 +218,6 @@ export default function AddMemberModal({
       </div>
     </div>
   );
-}
+};
+
+export default AddMemberModal;

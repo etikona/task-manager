@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Home, ArrowLeft, Search, FileQuestion } from "lucide-react";
 
-export default function NotFound() {
+const NotFound = () => {
   const router = useRouter();
 
   return (
@@ -47,4 +47,6 @@ export default function NotFound() {
       </div>
     </div>
   );
-}
+};
+
+export default NotFound;

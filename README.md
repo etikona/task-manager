@@ -1,36 +1,176 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Smart Task Manager
 
-## Getting Started
+**Live Demo:**  
+🔗 https://task-manager-dcew.vercel.app/
 
-First, run the development server:
+A modern, intelligent, and fully interactive **task, team, and project management system** built using **Next.js, TypeScript, Redux Toolkit, TailwindCSS, and Framer Motion**.  
+This application helps users manage teams, assign tasks, distribute workloads, and use **smart auto-balancing algorithms** to improve productivity.
+
+---
+
+## 🌟 Features
+
+### 🔐 Authentication
+
+- User Registration
+- User Login
+- Protected routes
+
+---
+
+### 👥 Team Management
+
+- Create teams
+- Add members (name, role, capacity)
+- See workload & capacity indicators
+- Overload warnings
+- Update/delete team members
+
+---
+
+### 📁 Project Management
+
+- Create projects
+- Assign project to a team
+- Update or delete projects
+- View project list per team
+
+---
+
+### ✅ Task Management
+
+- Create tasks with:
+  - Title
+  - Description
+  - Priority
+  - Status
+  - Assigned Member
+- Edit tasks
+- Delete tasks
+- Filter by project, member, or status
+
+---
+
+### 🤖 Intelligent Task Assignment
+
+#### **Auto-Assign**
+
+Automatically selects the member with the **lowest current load**.
+
+#### **Smart Reassignment (Automation)**
+
+Automatically:
+
+- Detects overloaded team members
+- Reassigns tasks to others
+- Keeps high-priority tasks untouched
+- Balances load respecting capacity
+- Logs every reassignment
+
+---
+
+### 📊 Dashboard
+
+Displays:
+
+- Total teams
+- Total projects
+- Total tasks
+- Workload distribution
+- Activity logs
+- “Reassign Tasks” smart button
+
+---
+
+### 📝 Activity Logs
+
+Automatically logs:
+
+- Task created/updated/deleted
+- Project created/updated/deleted
+- Team created/updated/deleted
+- Member added/updated/deleted
+- Task reassigned
+
+---
+
+### 🎨 Modern UI & UX
+
+Powered by:
+
+- Tailwind CSS
+- Framer Motion animations
+- ShadCN UI components
+- Fully responsive
+- Custom Navbar & Footer
+
+---
+
+## 🛠️ Tech Stack
+
+| Category         | Technology                        |
+| ---------------- | --------------------------------- |
+| Framework        | **Next.js 14 (App Router)**       |
+| Language         | **TypeScript**                    |
+| State Management | **Redux Toolkit + Redux Persist** |
+| UI               | **TailwindCSS**, **ShadCN UI**    |
+| Animations       | **Framer Motion**                 |
+| Deployment       | **Vercel**                        |
+| Storage          | **LocalStorage (Redux Persist)**  |
+
+---
 
 ```bash
+git clone https://github.com/your-repo-url.git
+cd smart-task-manager
+
+2️⃣ Install dependencies
+npm install
+
+3️⃣ Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+4️⃣ Build for production
+npm run build
+npm start
+
+🧠 Smart Reassignment Logic (How It Works)
+
+Identify all team members
+
+Check each member’s task count vs capacity
+
+Detect overloaded members
+
+Move low/medium priority tasks
+
+Keep high-priority tasks untouched
+
+Log all reassignments
+
+Ensure no member exceeds capacity
+
+🧪 Testing Checklist
+
+ Create a team
+
+ Add members
+
+ Create a project & assign team
+
+ Create tasks
+
+ Overload a member
+
+ Use Reassign Tasks
+
+ Verify activity logs
+
+ Refresh page (persistence check)
+
+🚀 Deployment
+
+Deployed using Vercel.
+
+🔗 https://task-manager-dcew.vercel.app/
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

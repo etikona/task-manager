@@ -13,7 +13,6 @@ export const useTaskReassignment = () => {
       reassignTasks({
         members,
         onReassignment: (reassignments) => {
-          // Log each reassignment to activity
           reassignments.forEach((reassignment) => {
             const task = tasks.find((t) => t.id === reassignment.taskId);
             const project = projects.find((p) => p.id === task?.projectId);

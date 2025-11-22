@@ -1,7 +1,6 @@
 import {
   logTaskCreated,
   logTaskUpdated,
-  logTaskReassigned,
   logTaskDeleted,
   logProjectCreated,
   logProjectUpdated,
@@ -15,6 +14,194 @@ import {
 } from "@/store/slices/activitySlice";
 import { Middleware } from "@reduxjs/toolkit";
 
+// Type Guards
+interface CreateTaskAction {
+  type: "tasks/createTask";
+  payload: {
+    title: string;
+    assignedMemberId?: string;
+    projectId: string;
+  };
+}
+
+interface UpdateTaskAction {
+  type: "tasks/updateTask";
+  payload: {
+    id: string;
+    title?: string;
+    status?: string;
+    priority?: string;
+    assignedMemberId?: string;
+  };
+}
+
+interface DeleteTaskAction {
+  type: "tasks/deleteTask";
+  payload: string;
+}
+
+interface CreateProjectAction {
+  type: "projects/createProject";
+  payload: {
+    name: string;
+    description?: string;
+    teamId?: string;
+  };
+}
+
+interface UpdateProjectAction {
+  type: "projects/updateProject";
+  payload: {
+    id: string;
+    name?: string;
+    description?: string;
+    status?: string;
+  };
+}
+
+interface DeleteProjectAction {
+  type: "projects/deleteProject";
+  payload: string;
+}
+
+interface CreateTeamAction {
+  type: "teams/createTeam";
+  payload: {
+    name: string;
+    description?: string;
+  };
+}
+
+interface UpdateTeamAction {
+  type: "teams/updateTeam";
+  payload: {
+    id: string;
+    name?: string;
+    description?: string;
+  };
+}
+
+interface DeleteTeamAction {
+  type: "teams/deleteTeam";
+  payload: string;
+}
+
+interface AddMemberAction {
+  type: "teams/addMember";
+  payload: {
+    name: string;
+    role?: string;
+    capacity?: number;
+    teamId?: string;
+  };
+}
+
+interface UpdateMemberAction {
+  type: "teams/updateMember";
+  payload: {
+    id: string;
+    name?: string;
+    role?: string;
+    capacity?: number;
+  };
+}
+
+interface DeleteMemberAction {
+  type: "teams/deleteMember";
+  payload: string;
+}
+
+// Type Guard Functions
+function isCreateTaskAction(action: any): action is CreateTaskAction {
+  return (
+    action.type === "tasks/createTask" &&
+    action.payload &&
+    typeof action.payload.title === "string" &&
+    typeof action.payload.projectId === "string"
+  );
+}
+
+function isUpdateTaskAction(action: any): action is UpdateTaskAction {
+  return (
+    action.type === "tasks/updateTask" &&
+    action.payload &&
+    typeof action.payload.id === "string"
+  );
+}
+
+function isDeleteTaskAction(action: any): action is DeleteTaskAction {
+  return (
+    action.type === "tasks/deleteTask" && typeof action.payload === "string"
+  );
+}
+
+function isCreateProjectAction(action: any): action is CreateProjectAction {
+  return (
+    action.type === "projects/createProject" &&
+    action.payload &&
+    typeof action.payload.name === "string"
+  );
+}
+
+function isUpdateProjectAction(action: any): action is UpdateProjectAction {
+  return (
+    action.type === "projects/updateProject" &&
+    action.payload &&
+    typeof action.payload.id === "string"
+  );
+}
+
+function isDeleteProjectAction(action: any): action is DeleteProjectAction {
+  return (
+    action.type === "projects/deleteProject" &&
+    typeof action.payload === "string"
+  );
+}
+
+function isCreateTeamAction(action: any): action is CreateTeamAction {
+  return (
+    action.type === "teams/createTeam" &&
+    action.payload &&
+    typeof action.payload.name === "string"
+  );
+}
+
+function isUpdateTeamAction(action: any): action is UpdateTeamAction {
+  return (
+    action.type === "teams/updateTeam" &&
+    action.payload &&
+    typeof action.payload.id === "string"
+  );
+}
+
+function isDeleteTeamAction(action: any): action is DeleteTeamAction {
+  return (
+    action.type === "teams/deleteTeam" && typeof action.payload === "string"
+  );
+}
+
+function isAddMemberAction(action: any): action is AddMemberAction {
+  return (
+    action.type === "teams/addMember" &&
+    action.payload &&
+    typeof action.payload.name === "string"
+  );
+}
+
+function isUpdateMemberAction(action: any): action is UpdateMemberAction {
+  return (
+    action.type === "teams/updateMember" &&
+    action.payload &&
+    typeof action.payload.id === "string"
+  );
+}
+
+function isDeleteMemberAction(action: any): action is DeleteMemberAction {
+  return (
+    action.type === "teams/deleteMember" && typeof action.payload === "string"
+  );
+}
+
 export const activityLogger: Middleware = (store) => (next) => (action) => {
   if (typeof action !== "object" || action === null || !("type" in action)) {
     return next(action);
@@ -26,7 +213,8 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
   const state = store.getState();
 
   try {
-    if (action.type === "tasks/createTask") {
+    // Task Actions
+    if (isCreateTaskAction(action)) {
       const { title, assignedMemberId, projectId } = action.payload;
 
       const tasks = state.tasks?.tasks || [];
@@ -47,7 +235,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "tasks/updateTask") {
+    if (isUpdateTaskAction(action)) {
       const task = state.tasks?.tasks?.find(
         (t: any) => t.id === action.payload.id
       );
@@ -95,7 +283,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "tasks/deleteTask") {
+    if (isDeleteTaskAction(action)) {
       store.dispatch(
         logTaskDeleted({
           taskId: action.payload,
@@ -105,7 +293,8 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       console.log("✅ Logged task deletion");
     }
 
-    if (action.type === "projects/createProject") {
+    // Project Actions
+    if (isCreateProjectAction(action)) {
       const { name, description, teamId } = action.payload;
 
       const projects = state.projects?.projects || [];
@@ -124,7 +313,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "projects/updateProject") {
+    if (isUpdateProjectAction(action)) {
       const project = state.projects?.projects?.find(
         (p: any) => p.id === action.payload.id
       );
@@ -164,7 +353,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "projects/deleteProject") {
+    if (isDeleteProjectAction(action)) {
       store.dispatch(
         logProjectDeleted({
           projectId: action.payload,
@@ -174,7 +363,8 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       console.log("✅ Logged project deletion");
     }
 
-    if (action.type === "teams/createTeam") {
+    // Team Actions
+    if (isCreateTeamAction(action)) {
       const { name, description } = action.payload;
 
       const teams = state.teams?.teams || [];
@@ -192,7 +382,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "teams/updateTeam") {
+    if (isUpdateTeamAction(action)) {
       const team = state.teams?.teams?.find(
         (t: any) => t.id === action.payload.id
       );
@@ -225,7 +415,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "teams/deleteTeam") {
+    if (isDeleteTeamAction(action)) {
       store.dispatch(
         logTeamDeleted({
           teamId: action.payload,
@@ -235,7 +425,8 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       console.log("✅ Logged team deletion");
     }
 
-    if (action.type === "teams/addMember") {
+    // Member Actions
+    if (isAddMemberAction(action)) {
       const { name, role, capacity, teamId } = action.payload;
 
       const members = state.teams?.members || [];
@@ -255,7 +446,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "teams/updateMember") {
+    if (isUpdateMemberAction(action)) {
       const member = state.teams?.members?.find(
         (m: any) => m.id === action.payload.id
       );
@@ -295,7 +486,7 @@ export const activityLogger: Middleware = (store) => (next) => (action) => {
       }
     }
 
-    if (action.type === "teams/deleteMember") {
+    if (isDeleteMemberAction(action)) {
       store.dispatch(
         logMemberDeleted({
           memberId: action.payload,

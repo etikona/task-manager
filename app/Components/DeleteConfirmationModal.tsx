@@ -9,12 +9,12 @@ interface DeleteConfirmationModalProps {
   taskTitle: string;
 }
 
-export default function DeleteConfirmationModal({
+const DeleteConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
   taskTitle,
-}: DeleteConfirmationModalProps) {
+}: DeleteConfirmationModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -52,4 +52,6 @@ export default function DeleteConfirmationModal({
       </div>
     </div>
   );
-}
+};
+
+export default DeleteConfirmationModal;

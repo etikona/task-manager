@@ -9,7 +9,6 @@ import {
   FolderKanban,
   ListTodo,
   CheckCircle2,
-  Clock,
   AlertCircle,
   RefreshCw,
   Activity,
@@ -78,7 +77,7 @@ const ActivityMonitor = () => {
   );
 };
 
-export default function DashboardPage() {
+const DashboardPage = () => {
   const dispatch = useAppDispatch();
   const { tasks, loading } = useAppSelector((state) => state.tasks);
   const { projects } = useAppSelector((state) => state.projects);
@@ -426,7 +425,7 @@ export default function DashboardPage() {
                     key={activity.id}
                     className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
                   >
-                    <div className="flex-shrink-0 mt-0.5">
+                    <div className="shrink-0 mt-0.5">
                       {getActivityIcon(activity.action)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -493,7 +492,7 @@ export default function DashboardPage() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                         {member.name
                           .split(" ")
                           .map((n) => n[0])
@@ -570,4 +569,6 @@ export default function DashboardPage() {
       <ActivityMonitor />
     </div>
   );
-}
+};
+
+export default DashboardPage;

@@ -1,4 +1,3 @@
-// app/activity/page.tsx
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
@@ -19,14 +18,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-export default function ActivityPage() {
+const ActivityPage = () => {
   const allActivities = useAppSelector(selectAllActivities);
   const [filter, setFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   console.log("Activity Page - All activities:", allActivities);
 
-  // Enhanced filtering based on action content
   const filteredActivities = allActivities.filter((activity) => {
     if (filter === "all") return true;
 
@@ -53,7 +51,6 @@ export default function ActivityPage() {
     }
   });
 
-  // Sort activities - newest first by default
   const sortedActivities = [...filteredActivities].sort((a, b) => {
     if (sortOrder === "newest") {
       return b.timestamp - a.timestamp;
@@ -172,7 +169,6 @@ export default function ActivityPage() {
     }
   };
 
-  // Group activities by date
   const groupedActivities = sortedActivities.reduce((groups, activity) => {
     const date = formatDate(activity.timestamp);
     if (!groups[date]) {
@@ -182,7 +178,6 @@ export default function ActivityPage() {
     return groups;
   }, {} as Record<string, typeof sortedActivities>);
 
-  // Enhanced filters based on content analysis
   const activityFilters = [
     { value: "all", label: "All Activities", count: allActivities.length },
     {
@@ -246,7 +241,6 @@ export default function ActivityPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-blue-100 rounded-xl">
@@ -260,7 +254,6 @@ export default function ActivityPage() {
             </div>
           </div>
 
-          {/* Sort Button */}
           <button
             onClick={() =>
               setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
@@ -274,7 +267,6 @@ export default function ActivityPage() {
           </button>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-5 h-5 text-gray-600" />
@@ -309,7 +301,6 @@ export default function ActivityPage() {
           </div>
         </div>
 
-        {/* Activity Log */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           {Object.keys(groupedActivities).length > 0 ? (
             Object.entries(groupedActivities).map(([date, activities]) => (
@@ -329,7 +320,6 @@ export default function ActivityPage() {
                   </div>
                 </div>
 
-                {/* Activities List */}
                 <div className="divide-y divide-gray-100">
                   {activities.map((activity) => (
                     <div
@@ -340,7 +330,7 @@ export default function ActivityPage() {
                     >
                       <div className="flex items-start gap-4">
                         {/* Icon */}
-                        <div className="flex-shrink-0 mt-1">
+                        <div className="shrink-0 mt-1">
                           {getActivityIcon(activity.action)}
                         </div>
 
@@ -365,7 +355,6 @@ export default function ActivityPage() {
                             </p>
                           )}
 
-                          {/* References */}
                           <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
                             {activity.taskId && activity.taskId !== 0 && (
                               <div className="flex items-center gap-1">
@@ -400,7 +389,6 @@ export default function ActivityPage() {
               </div>
             ))
           ) : (
-            /* Empty State */
             <div className="text-center py-16">
               <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -417,7 +405,6 @@ export default function ActivityPage() {
           )}
         </div>
 
-        {/* Stats Footer */}
         {allActivities.length > 0 && (
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
@@ -433,4 +420,6 @@ export default function ActivityPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ActivityPage;

@@ -6,9 +6,7 @@ interface CapacityIndicatorProps {
   memberId: number;
 }
 
-export default function CapacityIndicator({
-  memberId,
-}: CapacityIndicatorProps) {
+const CapacityIndicator = ({ memberId }: CapacityIndicatorProps) => {
   const { tasks } = useAppSelector((state) => state.tasks);
   const { members } = useAppSelector((state) => state.teams);
 
@@ -39,4 +37,6 @@ export default function CapacityIndicator({
       {isNearCapacity && " ⚠️ Full"}
     </span>
   );
-}
+};
+
+export default CapacityIndicator;

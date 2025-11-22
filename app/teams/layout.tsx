@@ -4,11 +4,7 @@ import { useAppSelector } from "@/hooks/redux";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function TeamsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const TeamsLayout = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, initialized } = useAppSelector(
     (state) => state.auth
   );
@@ -31,4 +27,6 @@ export default function TeamsLayout({
   }
 
   return <>{children}</>;
-}
+};
+
+export default TeamsLayout;

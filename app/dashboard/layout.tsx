@@ -4,11 +4,7 @@ import { useAppSelector } from "@/hooks/redux";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, initialized } = useAppSelector(
     (state) => state.auth
   );
@@ -36,4 +32,6 @@ export default function DashboardLayout({
   }
 
   return <>{children}</>;
-}
+};
+
+export default DashboardLayout;

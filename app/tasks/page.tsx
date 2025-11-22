@@ -22,7 +22,7 @@ import { deleteTask } from "@/store/slices/taskSlice";
 import { useRouter } from "next/navigation";
 import MemberCapacityBadge from "../Components/MemberCapacityBadge";
 
-export default function TasksPage() {
+const TasksPage = () => {
   const { tasks } = useAppSelector((state) => state.tasks);
   const { projects } = useAppSelector((state) => state.projects);
   const { members } = useAppSelector((state) => state.teams);
@@ -477,4 +477,6 @@ export default function TasksPage() {
       </div>
     </div>
   );
-}
+};
+
+export default TasksPage;

@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
@@ -29,4 +29,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   return <>{children}</>;
-}
+};
+
+export default ProtectedRoute;

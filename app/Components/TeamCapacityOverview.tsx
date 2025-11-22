@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppSelector } from "@/hooks/redux";
-import { AlertTriangle, CheckCircle2, Users } from "lucide-react";
+import { AlertTriangle, Users } from "lucide-react";
 import MemberCapacityBadge from "./MemberCapacityBadge";
 
 interface TeamCapacityOverviewProps {
@@ -9,10 +9,10 @@ interface TeamCapacityOverviewProps {
   compact?: boolean;
 }
 
-export default function TeamCapacityOverview({
+const TeamCapacityOverview = ({
   teamId,
   compact = false,
-}: TeamCapacityOverviewProps) {
+}: TeamCapacityOverviewProps) => {
   const { members } = useAppSelector((state) => state.teams);
   const { tasks } = useAppSelector((state) => state.tasks);
 
@@ -131,4 +131,6 @@ export default function TeamCapacityOverview({
       </div>
     </div>
   );
-}
+};
+
+export default TeamCapacityOverview;

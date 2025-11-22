@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAppSelector } from "@/hooks/redux";
 import { Plus, Users, Calendar, ArrowRight, MoreVertical } from "lucide-react";
 
-export default function TeamsPage() {
+const TeamsPage = () => {
   const { teams, members } = useAppSelector((state) => state.teams);
   const { tasks } = useAppSelector((state) => state.tasks);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
@@ -14,7 +14,6 @@ export default function TeamsPage() {
     return members.filter((member) => member.teamId === teamId);
   };
 
-  // Calculate member's current task count dynamically
   const getMemberTaskCount = (memberId: number) => {
     return tasks.filter((task) => task.assignedMemberId === memberId).length;
   };
@@ -159,4 +158,6 @@ export default function TeamsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default TeamsPage;

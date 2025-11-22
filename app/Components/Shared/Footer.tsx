@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Github, Linkedin, Globe, Mail } from "lucide-react";
 
-export default function Footer() {
+const Footer = () => {
   const links = [
     { name: "Dashboard", href: "/dashboard" },
     { name: "Teams", href: "/teams" },
@@ -87,4 +87,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

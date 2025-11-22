@@ -7,7 +7,7 @@ import { createProject } from "@/store/slices/projectSlice";
 import { ArrowLeft, Save, FolderKanban, Users } from "lucide-react";
 import Link from "next/link";
 
-export default function CreateProjectPage() {
+const CreateProjectPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -242,4 +242,6 @@ export default function CreateProjectPage() {
       </div>
     </div>
   );
-}
+};
+
+export default CreateProjectPage;

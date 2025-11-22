@@ -12,7 +12,7 @@ import {
   Search,
 } from "lucide-react";
 
-export default function ProjectsPage() {
+const ProjectsPage = () => {
   const { projects } = useAppSelector((state) => state.projects);
   const { teams } = useAppSelector((state) => state.teams);
   const [searchTerm, setSearchTerm] = useState("");
@@ -244,4 +244,6 @@ export default function ProjectsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ProjectsPage;

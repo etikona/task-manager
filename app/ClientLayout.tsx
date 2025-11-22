@@ -7,7 +7,7 @@ interface ClientLayoutProps {
   children: React.ReactNode;
 }
 
-export default function ClientLayout({ children }: ClientLayoutProps) {
+const ClientLayout = ({ children }: ClientLayoutProps) => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const pathname = usePathname();
   const router = useRouter();
@@ -41,4 +41,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   }, [pathname, isAuthenticated, router]);
 
   return <>{children}</>;
-}
+};
+
+export default ClientLayout;

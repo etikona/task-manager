@@ -17,7 +17,7 @@ import {
   Save,
 } from "lucide-react";
 
-export default function ProjectDetailPage() {
+const ProjectDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const projectId = parseInt(params.id as string);
@@ -493,4 +493,6 @@ export default function ProjectDetailPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ProjectDetailPage;

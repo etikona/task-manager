@@ -9,11 +9,11 @@ interface MemberCapacityBadgeProps {
   compact?: boolean;
 }
 
-export default function MemberCapacityBadge({
+const MemberCapacityBadge = ({
   memberId,
   showIcon = true,
   compact = false,
-}: MemberCapacityBadgeProps) {
+}: MemberCapacityBadgeProps) => {
   const { tasks } = useAppSelector((state) => state.tasks);
   const { members } = useAppSelector((state) => state.teams);
 
@@ -77,4 +77,6 @@ export default function MemberCapacityBadge({
       {getCapacityText()}
     </span>
   );
-}
+};
+
+export default MemberCapacityBadge;

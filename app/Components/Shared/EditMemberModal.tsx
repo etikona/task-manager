@@ -11,12 +11,12 @@ interface EditMemberModalProps {
   onSave: (updatedMember: any) => void;
 }
 
-export default function EditMemberModal({
+const EditMemberModal = ({
   isOpen,
   onClose,
   member,
   onSave,
-}: EditMemberModalProps) {
+}: EditMemberModalProps) => {
   const { tasks } = useAppSelector((state) => state.tasks);
 
   const [formData, setFormData] = useState({
@@ -233,7 +233,6 @@ export default function EditMemberModal({
               </p>
             </div>
 
-            {/* Workload Summary */}
             <div
               className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                 isOverloaded
@@ -288,7 +287,7 @@ export default function EditMemberModal({
               {isOverloaded && (
                 <div className="mt-3 p-3 bg-red-100 rounded-lg border border-red-200">
                   <p className="text-sm text-red-700 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
                     <span>
                       This member is overloaded! Consider reassigning tasks or
                       increasing capacity.
@@ -321,4 +320,6 @@ export default function EditMemberModal({
       </div>
     </div>
   );
-}
+};
+
+export default EditMemberModal;

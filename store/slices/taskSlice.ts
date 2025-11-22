@@ -153,7 +153,6 @@ const tasksSlice = createSlice({
       state,
       action: PayloadAction<{
         members: TeamMember[];
-        // Add these new fields to track reassignments
         onReassignment?: (
           reassignments: Array<{
             taskId: number;
@@ -182,13 +181,11 @@ const tasksSlice = createSlice({
         );
 
         if (memberTasks.length > member.capacity) {
-          // Get tasks that can be reassigned (not high priority)
           const tasksToReassign = memberTasks
             .filter((task) => task.priority !== "high")
             .slice(0, memberTasks.length - member.capacity);
 
           tasksToReassign.forEach((task) => {
-            // Find available member
             const availableMember = members.find((m) => {
               const mTasks = state.tasks.filter(
                 (t) => t.assignedMemberId === m.id
@@ -197,7 +194,6 @@ const tasksSlice = createSlice({
             });
 
             if (availableMember) {
-              // Record the reassignment BEFORE making the change
               reassignments.push({
                 taskId: task.id,
                 taskTitle: task.title,
@@ -207,7 +203,6 @@ const tasksSlice = createSlice({
                 toMemberName: availableMember.name,
               });
 
-              // Make the reassignment
               task.assignedMemberId = availableMember.id;
               task.updatedAt = Date.now();
             }
@@ -215,7 +210,6 @@ const tasksSlice = createSlice({
         }
       });
 
-      // Call the callback with all reassignments
       if (onReassignment && reassignments.length > 0) {
         onReassignment(reassignments);
       }
